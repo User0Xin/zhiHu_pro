@@ -3,6 +3,8 @@ import { ref, reactive, toRefs } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import router from '@/router';
+import signComponent from '@/components/sign/signComponent.vue'
+import loginComponent from '@/components/sign/loginComponent.vue'
 const input = ref('')
 const state = reactive({
     circleUrl:
@@ -41,53 +43,29 @@ class User {
     }
 }
 
-//登录
-const dialogTableVisible = ref(false)
+//登录弹窗
 const dialogFormVisible = ref(false)
 
+const toSign = ref(false);
 
 const handleLogin = () => {
     dialogFormVisible.value = true
 }
 
 
-
-// 登录表单
-interface RuleForm {
-    userName: string,
-    password: string,
-    type: string[]
+const toSignPage = () => {
+    dialogTitle.value = '注册';
+    toSign.value = true;
 }
 
-const formSize = ref('default')
-const ruleFormRef = ref<FormInstance>()
-const ruleForm = reactive<RuleForm>({
-    userName: '',
-    password: '',
-    type: []
-})
 
-const rules = reactive<FormRules<RuleForm>>({
-    userName: [
-        { required: true, message: '请输入账号', trigger: 'blur' }
-    ],
-    password: [
-        {
-            required: true,
-            message: '请输入密码'
-        },
-    ],
-})
 
-//提交表单
-const submitForm = async (formEl: FormInstance | undefined, ruleForm: RuleForm) => {
-
+const handleCloseDialog = () => {
+    dialogTitle.value = '登录';
+    toSign.value = false;
 }
 
-const resetForm = (formEl: FormInstance | undefined) => {
-    if (!formEl) return
-    formEl.resetFields()
-}
+const dialogTitle = ref('登录');
 
 const getImageUrl = (name: string) => {
     return new URL(`../../assets/img/${name}`, import.meta.url).href;
@@ -111,10 +89,10 @@ const user = ref<User>(new User('小猪佩奇', 'touXiang01.png'));
             <div class="touXiang" style="margin-left: 10px;">
                 <!-- 未登录 -->
                 <span class="el-dropdown-link" v-if="!isLogin">
-                    <el-avatar :size="40" :src="circleUrl" />
+                    <el-avatar :size="40" :src="circleUrl" @click="handleLogin" />
                 </span>
                 <!-- 已登录 -->
-                <el-dropdown trigger="click" v-if="!isLogin">
+                <el-dropdown trigger="click" v-if="isLogin">
                     <span class="el-dropdown-link">
                         <el-avatar :size="40" :src="getImageUrl(user.touXiang)" />
                     </span>
@@ -127,32 +105,14 @@ const user = ref<User>(new User('小猪佩奇', 'touXiang01.png'));
                         </el-dropdown-menu>
                     </template>
                 </el-dropdown>
-
             </div>
         </div>
-        <el-dialog v-model="dialogFormVisible" title="登录" width="500px">
-            <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm"
-                :size="formSize" status-icon>
-                <el-form-item label="账号" prop="userName">
-                    <el-input v-model="ruleForm.userName" type="text" />
-                </el-form-item>
-                <el-form-item label="密码" prop="password">
-                    <el-input v-model="ruleForm.password" type="password" show-password />
-                </el-form-item>
-                <el-form-item prop="type" style="margin-bottom: 0;">
-                    <el-checkbox-group v-model="ruleForm.type">
-                        <el-checkbox label="记住账号" name="type" />
-                        <el-checkbox label="自动登录" name="type" />
-                    </el-checkbox-group>
-                </el-form-item>
-                <el-form-item style="margin-top: 10px;">
-                    <el-button @click="submitForm(ruleFormRef, ruleForm)">
-                        登录
-                    </el-button>
-                    <el-button @click="resetForm(ruleFormRef)">重置</el-button>
-                </el-form-item>
-            </el-form>
-
+        <el-dialog v-model="dialogFormVisible" :title="dialogTitle" width="450px" @close="handleCloseDialog"
+            destroy-on-close=true>
+            <loginComponent v-if="!toSign"></loginComponent>
+            <signComponent v-if="toSign"></signComponent>
+            <el-button link style="position: absolute; right: 10px; bottom: 30px;" @click="toSignPage"
+                v-if="!toSign">没有账号，去注册！</el-button>
         </el-dialog>
     </div>
 </template>
