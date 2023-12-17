@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, reactive, toRefs } from 'vue'
+import { ref, reactive, toRefs, provide } from 'vue'
 import { Search } from '@element-plus/icons-vue'
-import type { FormInstance, FormRules } from 'element-plus'
 import router from '@/router';
 import signComponent from '@/components/sign/signComponent.vue'
 import loginComponent from '@/components/sign/loginComponent.vue'
+import { useLoginStore } from '@/stores/loginStore';
+
+const loginStore = useLoginStore()
 const input = ref('')
 const state = reactive({
     circleUrl:
@@ -12,25 +14,26 @@ const state = reactive({
     sizeList: ['small', '', 'large'] as const,
 })
 
-const { circleUrl, sizeList } = toRefs(state)
+const { circleUrl, sizeList } = toRefs(state);
 
 
 //头像下拉框
 const handleClickMyPage = () => {
-    router.push('/personalPage')
+    router.push('/personalPage');
 }
 
+//退出登录
 const handleClickLogout = () => {
     console.log('退出登录')
+    loginStore.Logout();
+    router.push('/');
 }
 
 //返回主页
 const backToMain = () => {
-    router.push('/')
+    router.push('/');
 }
 
-//是否登录
-const isLogin = ref(false);
 
 
 // 用户
@@ -44,32 +47,48 @@ class User {
 }
 
 //登录弹窗
-const dialogFormVisible = ref(false)
+const dialogFormVisible = ref(false);
 
-const toSign = ref(false);
+const destroyOnClose = ref(true);
 
-const handleLogin = () => {
-    dialogFormVisible.value = true
+//隐藏登录弹窗
+const hidedialogForm = () => {
+    dialogFormVisible.value = false;
 }
 
+//暴露隐藏登录弹窗方法
+provide('hidedialogForm', hidedialogForm);
 
+//是否跳转到注册页面
+const toSign = ref(false);
+
+//登录
+const handleLogin = () => {
+    dialogFormVisible.value = true;
+}
+
+//跳转到注册页面
 const toSignPage = () => {
     dialogTitle.value = '注册';
     toSign.value = true;
 }
 
 
-
+//关闭弹窗
 const handleCloseDialog = () => {
     dialogTitle.value = '登录';
     toSign.value = false;
 }
 
+//弹窗标题
 const dialogTitle = ref('登录');
 
+//获取图片路径
 const getImageUrl = (name: string) => {
     return new URL(`../../assets/img/${name}`, import.meta.url).href;
 }
+
+//测试用户
 const user = ref<User>(new User('小猪佩奇', 'touXiang01.png'));
 </script>
 
@@ -84,15 +103,15 @@ const user = ref<User>(new User('小猪佩奇', 'touXiang01.png'));
             </el-input>
         </div>
         <div style="display: flex; justify-content: center; align-items: center;">
-            <div class="UserName" v-if="isLogin">{{ user.name }}</div>
-            <el-button link v-if="!isLogin" @click="handleLogin">请登录</el-button>
+            <div class="UserName" v-if="loginStore.isLogin">{{ user.name }}</div>
+            <el-button link v-if="!loginStore.isLogin" @click="handleLogin">请登录</el-button>
             <div class="touXiang" style="margin-left: 10px;">
                 <!-- 未登录 -->
-                <span class="el-dropdown-link" v-if="!isLogin">
+                <span class="el-dropdown-link" v-if="!loginStore.isLogin">
                     <el-avatar :size="40" :src="circleUrl" @click="handleLogin" />
                 </span>
                 <!-- 已登录 -->
-                <el-dropdown trigger="click" v-if="isLogin">
+                <el-dropdown trigger="click" v-if="loginStore.isLogin">
                     <span class="el-dropdown-link">
                         <el-avatar :size="40" :src="getImageUrl(user.touXiang)" />
                     </span>
@@ -108,7 +127,7 @@ const user = ref<User>(new User('小猪佩奇', 'touXiang01.png'));
             </div>
         </div>
         <el-dialog v-model="dialogFormVisible" :title="dialogTitle" width="450px" @close="handleCloseDialog"
-            destroy-on-close=true>
+            :destroy-on-close="destroyOnClose">
             <loginComponent v-if="!toSign"></loginComponent>
             <signComponent v-if="toSign"></signComponent>
             <el-button link style="position: absolute; right: 10px; bottom: 30px;" @click="toSignPage"

@@ -3,23 +3,25 @@ import { computed, ref } from "vue";
 // 定义store
 // defineStore(仓库唯一标识,()=>{...})
 
-export const usrQuestionsStore = defineStore('questions', () => {
+export const useLoginStore = defineStore('loginStore', () => {
     //声明数据 state
-    const count = ref(15)
+
+    //是否登录
+    const isLogin = ref(false);
     //声明操作数据的方法 action  (普通函数)
-    const addCount = () => {
-        count.value++
+    const Login = () => {
+        isLogin.value = true
     }
 
-    const subCount = () => {
-        count.value--
+    const Logout = () => {
+        isLogin.value = false
     }
     //声明基于数据派生的计算属性 getters (computed)
 
     return {
-        count,
-        addCount,
-        subCount
+        isLogin,
+        Login,
+        Logout
     }
 
 })

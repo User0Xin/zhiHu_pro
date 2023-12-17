@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, inject } from 'vue';
 import type { FormInstance, FormRules } from 'element-plus'
-const activeStep = ref(1);
+import { useLoginStore } from '@/stores/loginStore';
+const loginStore = useLoginStore();
+const hidedialogForm = inject('hidedialogForm') as any;
 
-const dialogFormVisible = ref(false)
 // 登录表单
 interface RuleForm {
     account: string,
@@ -40,6 +41,8 @@ const submitForm = async (formEl: FormInstance | undefined, ruleForm: RuleForm) 
             console.log(ruleForm)
             console.log("发送请求")
             // 发送请求，后端返回token，把token放到localstorage中，后面每次请求带上token
+            loginStore.Login();
+            hidedialogForm();
         }
     })
 }

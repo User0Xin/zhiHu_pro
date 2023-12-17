@@ -1,15 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, toRefs, onMounted } from 'vue'
 import headerVue from '@/components/header/header.vue'
-import questionsList from '@/components/main_left/leftComponent.vue'
-import sideComponent from '@/components/main_right/sideComponent.vue'
-import { usrQuestionsStore } from '@/stores/questions'
-const counterStore = usrQuestionsStore()
 
-const load = () => {
-  console.log("add");
-  counterStore.addCount();
-}
 
 </script>
 
@@ -47,3 +39,4 @@ const load = () => {
   height: 700px;
 }
 </style>
+@/stores/loginStore
