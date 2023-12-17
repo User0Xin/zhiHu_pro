@@ -5,13 +5,26 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'mainPage',
-      component: () => import('../views/mainPage.vue')
+      name: 'indexPage',
+      component: () => import('../views/indexPage.vue'),
+      redirect: '/mainPage',
+      children: [
+        {
+          path: '/mainPage',
+          name: 'mainPage',
+          component: () => import('../views/mainPage.vue')
+        },
+        {
+          path: '/personalPage',
+          name: 'personalPage',
+          component: () => import('../views/personalPage.vue')
+        }
+      ]
     },
     {
-      path: '/personalPage',
-      name: 'personalPage',
-      component: () => import('../views/personalPage.vue')
+      path: '/sign',
+      name: 'signPage',
+      component: () => import('../views/signPage.vue')
     }
   ]
 })

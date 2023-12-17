@@ -78,7 +78,7 @@ const submitForm = async (formEl: FormInstance | undefined, ruleForm: RuleForm) 
             console.log(ruleForm)
             console.log("发送请求")
             // 发送请求，后端返回token，把token放到localstorage中，后面每次请求带上token
-            carouselHeight.value = '160px';
+            carouselHeight.value = '180px';
             carousel.value?.next()
             activeStep.value = activeStep.value + 1;
         }
@@ -129,7 +129,7 @@ const submitEmailForm = async (formEl: FormInstance | undefined, emailRuleForm: 
             console.log(emailRuleForm)
             console.log("发送请求")
             // 发送请求,后端发送验证码到邮箱
-            carouselHeight.value = '110px';
+            carouselHeight.value = '180px';
             carousel.value?.next()
             activeStep.value = activeStep.value + 1;
         }
@@ -202,7 +202,7 @@ const submitCodeForm = async (formEl: FormInstance | undefined, codeRuleForm: Co
         <el-carousel-item>
             <el-form ref="emailRuleFormRef" :model="emailRuleForm" :rules="emailRules" label-width="80px"
                 class="demo-ruleForm" :size="formSize" status-icon style="width: 80%; margin-top:20px;margin-left: 20px">
-                <el-form-item label="用户名" prop="userName">
+                <el-form-item label="用户名" prop="userName" style="margin-top: 45px;">
                     <el-input v-model="emailRuleForm.userName" type="text" />
                 </el-form-item>
                 <el-form-item label="邮箱" prop="email">
@@ -221,7 +221,7 @@ const submitCodeForm = async (formEl: FormInstance | undefined, codeRuleForm: Co
         <el-carousel-item>
             <el-form ref="codeRuleFormRef" :model="codeRuleForm" :rules="codeRules" label-width="80px" class="demo-ruleForm"
                 :size="formSize" status-icon style="width: 80%; margin-top:20px;margin-left: 20px">
-                <el-form-item label="验证码" prop="code">
+                <el-form-item label="验证码" prop="code" style="margin-top: 70px">
                     <el-input v-model="codeRuleForm.code" type="text" />
                 </el-form-item>
                 <el-form-item style="margin-top: 20px;">
