@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import router from '@/router';
 
 // 点击草稿箱的逻辑
 const handleDraft = () => {
@@ -7,7 +8,7 @@ const handleDraft = () => {
 
 // 点击写文章的逻辑
 const handleWriteArticle = () => {
-    console.log('写文章');
+    router.push('/writeArticlePage');
 }
 
 // 点击发视频的逻辑

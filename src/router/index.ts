@@ -18,6 +18,11 @@ const router = createRouter({
           path: '/personalPage',
           name: 'personalPage',
           component: () => import('../views/personalPage.vue')
+        },
+        {
+          path: '/writeArticlePage',
+          name: 'writeArticlePage',
+          component: () => import('../views/writeArticlePage.vue')
         }
       ]
     },
