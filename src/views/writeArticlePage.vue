@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { type Ref } from 'vue';
 import type { ElCarousel, FormInstance, FormRules } from 'element-plus'
 import type { UploadProps, UploadUserFile } from 'element-plus'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
-import { tr } from 'element-plus/es/locale/index.mjs';
+import draggable from 'vuedraggable';
 import request from '@/utils/request'
 import router from '@/router';
 const articleContent = ref('');
@@ -26,8 +26,9 @@ const saveArticle = () => {
 
 
 
-// 邮箱表单
 
+
+// 表单
 interface RuleForm {
     content: string,
     title: string,
@@ -161,7 +162,6 @@ const beforeRemove: UploadProps['beforeRemove'] = (uploadFile, uploadFiles) => {
 
 // 删除视频
 const handleRemove: UploadProps['onRemove'] = (file, uploadFiles) => {
-    console.log(file.name)
     ruleForm.videourl = '';  // 删除视频后，将表单中的视频地址清空
     percentage.value = 0;  // 删除视频后，将进度条百分比清零
     progressStatus.value = '';  // 删除视频后，将进度条状态清空
@@ -190,10 +190,134 @@ const handleExceed: UploadProps['onExceed'] = (files, uploadFiles) => {
 
 const format = (percentage: number) => (percentage === 100 ? 'wait' : `${percentage}%`)
 
+
+const addImgTableVisable = ref(false)
+//点击添加图片
+const handleCommand = (command: string | number | object) => {
+    addImgTableVisable.value = true;
+}
+
+class Img {
+    id: number;
+    name: string;
+    imgUrl: string;
+    sortNum: number;
+    constructor(id: number, name: string, imgUrl: string, sortNum: number) {
+        this.id = id;
+        this.name = name;
+        this.imgUrl = imgUrl;
+        this.sortNum = sortNum;
+    }
+
+}
+const imageListArr = ref<Img[]>([])
+
+const dataDragEnd = (event: any) => {
+    // 拖拽图片更换位置 并重新从1开始排序
+    imageListArr.value.forEach((item, index) => {
+        item.sortNum = index + 1
+    })
+    //过滤一下imgUrl为空的数据
+    imageListArr.value = imageListArr.value.filter(item => {
+        return item.imgUrl != ''
+    });
+    console.log(imageListArr.value)
+}
+
+const imgfileList = ref<UploadUserFile[]>([])
+
+// 上传图片成功
+const handleImgSuccess = (response: any, file: any, fileList: any) => {
+    // 添加图片到图片列表
+    imageListArr.value.push(new Img(imageListArr.value.length + 1, 'content' + file.name, response.data, imageListArr.value.length + 1))
+}
+
+// 删除图片
+const handleRemoveImg = (sortNum: number) => {
+    // 删除oss服务器上的图片
+    request.delete('/question/deleteFile/' + imageListArr.value[sortNum - 1].name).then((res: any) => {
+        // 删除图片列表中的图片
+        imgfileList.value.splice(sortNum - 1, 1)
+        imageListArr.value.splice(sortNum - 1, 1)
+        // 拖拽图片更换位置 并重新从1开始排序
+        imageListArr.value.forEach((item, index) => {
+            item.sortNum = index + 1
+        })
+        //过滤一下imgUrl为空的数据
+        imageListArr.value = imageListArr.value.filter(item => {
+            return item.imgUrl != ''
+        });
+
+    })
+
+}
+
+// 关闭图片上传弹窗
+const closeUploadImg = () => {
+    // 关闭图片上传弹窗时，遍历删除刚刚上传的图片
+    imageListArr.value.forEach((item, index) => {
+        request.delete('/question/deleteFile/' + item.name).then((res: any) => {
+        })
+    })
+    imageListArr.value = [];
+    addImgTableVisable.value = false;
+}
+
+// 确定上传图片
+const handleUploadImg = () => {
+    //遍历上传的图片
+    imageListArr.value.forEach((item, index) => {
+        ruleForm.content += '<img src=\"' + item.imgUrl + '\">\n'
+    }
+    )
+    // 清空上传图片列表
+    imageListArr.value = [];
+    imgfileList.value = [];
+    //关闭弹窗
+    addImgTableVisable.value = false;
+}
+
+
+
 </script>
 
 <template>
     <div class="mainContainer">
+
+        <div class="img-btn" @click="handleCommand" link><el-icon>
+                <Picture />
+            </el-icon></div>
+        <el-dialog v-model="addImgTableVisable" title="添加图片" @close="closeUploadImg">
+            <div style="position: relative;">
+                <ul class="image-upload">
+                    <draggable :list="imageListArr" @update="dataDragEnd" item-key="sortNum" handle=".handle"
+                        animation="200">
+                        <template #item="{ element, index }">
+                            <li class="handle">
+                                <img v-if="element.imgUrl" style="width:100% ;height: 90px" :src="element.imgUrl">
+                                <div class="icon-container"
+                                    style="display: flex; justify-content: center; align-items: center;">
+                                    <el-button v-if="element.imgUrl" @click="handleRemoveImg(element.sortNum)" link>
+                                        <el-icon>
+                                            <CloseBold />
+                                        </el-icon>
+                                    </el-button>
+                                </div>
+                            </li>
+                        </template>
+                    </draggable>
+                </ul>
+
+                <el-upload v-model:file-list="imgfileList" class="upload-demo"
+                    action="http://localhost:8081/question/uploadContentImg" multiple :on-preview="handlePreview"
+                    :on-remove="handleRemove" :before-remove="beforeRemove" :on-success="handleImgSuccess"
+                    :show-file-list="false">
+                    <el-button type="primary">上传图片</el-button>
+                </el-upload>
+                <el-button type="primary" style="position: absolute; bottom: 0px; left: 110px;"
+                    @click="handleUploadImg">确定</el-button>
+            </div>
+        </el-dialog>
         <el-form ref="ruleFormRef" :model="ruleForm" :rules="Rules" label-position="top">
             <el-form-item prop="content">
                 <mavon-editor v-model="ruleForm.content" @imgAdd="imgAdd" @save="saveArticle" class="editor" />
@@ -231,8 +355,9 @@ const format = (percentage: number) => (percentage === 100 ? 'wait' : `${percent
                 <el-button type="default" @click="storeAsDedraft(ruleFormRef, ruleForm)">存为草稿</el-button>
             </el-card>
         </el-form>
+
     </div>
-    <el-dialog v-model="dialogTableVisible" title="Shipping address">
+    <el-dialog v-model="dialogTableVisible" title="视频预览">
         <video :src="videourl" width="100%" height="100%" controls="true"></video>
     </el-dialog>
 </template>
@@ -240,7 +365,7 @@ const format = (percentage: number) => (percentage === 100 ? 'wait' : `${percent
 <style scoped>
 /* 主体 */
 .mainContainer {
-
+    position: relative;
     width: 65%;
     margin: 0 auto;
 }
@@ -283,6 +408,49 @@ const format = (percentage: number) => (percentage === 100 ? 'wait' : `${percent
     top: 10px;
     left: 150px;
     width: 80%;
+}
+
+.img-btn {
+    position: absolute;
+    display: flex;
+    justify-self: center;
+    align-items: center;
+    padding-left: 7px;
+    z-index: 2;
+    width: 28px;
+    height: 28px;
+    top: 7px;
+    left: 662px;
+    border: 0;
+
+}
+
+.img-btn:hover {
+    cursor: pointer;
+    background-color: #e9e9eb;
+    color: #2f2f2f;
+    border: 0;
+}
+
+.img-btn:active {
+    background-color: #e9e9eb;
+    color: #606266;
+    border: 0;
+}
+
+
+.image-upload {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.image-upload li {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    margin: 10px;
 }
 </style>
 

@@ -12,6 +12,9 @@ import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 
 
+
+
+
 const app = createApp(App)
 
 
@@ -22,5 +25,6 @@ app.use(createPinia())
 app.use(router)
 app.use(ElementPlus)
 app.use(mavonEditor)
+
 app.mount('#app')
 
