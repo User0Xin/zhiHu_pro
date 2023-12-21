@@ -10,10 +10,12 @@ export const useLoginStore = defineStore('loginStore', () => {
     const isLogin = ref(false);
     //声明操作数据的方法 action  (普通函数)
     const Login = () => {
+        localStorage.setItem('isLogin', 'true')
         isLogin.value = true
     }
 
     const Logout = () => {
+        localStorage.removeItem('isLogin')
         isLogin.value = false
     }
     //声明基于数据派生的计算属性 getters (computed)

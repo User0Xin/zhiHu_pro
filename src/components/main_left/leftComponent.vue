@@ -33,8 +33,10 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
     if (tab.props.name === '推荐') {
         
     }
-
 }
+
+const hasNew = ref(true);
+
 </script>
 
 <template>
@@ -43,6 +45,9 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
             <el-tab-pane label="热门推荐" name="推荐">
             </el-tab-pane>
             <el-tab-pane label="最新发布" name="最新发布">
+                <template #label>
+                    <el-badge :is-dot="hasNew" class="item" value="new">最新发布</el-badge>
+                </template>
             </el-tab-pane>
             <el-tab-pane label="我的问题" name="我的问题">
             </el-tab-pane>
@@ -52,4 +57,8 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 </template>
 
 
-<style scoped></style>
+<style scoped>
+.newTabContainer{
+    position: relative;
+}
+</style>

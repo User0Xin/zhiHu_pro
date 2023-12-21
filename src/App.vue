@@ -8,6 +8,9 @@ const top = () => {
   alert('top');
   window.scrollTo(0, 0);
 }
+
+
+
 </script>
 
 <template>
@@ -40,6 +43,8 @@ const top = () => {
   background-color: #ebe2cd;
   transform: translateY(-1px);
 }
+
+
 
 </style>
 @/stores/loginStore

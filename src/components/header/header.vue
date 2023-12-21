@@ -5,8 +5,9 @@ import router from '@/router';
 import signComponent from '@/components/sign/signComponent.vue'
 import loginComponent from '@/components/sign/loginComponent.vue'
 import { useLoginStore } from '@/stores/loginStore';
-
+import { useQuestionStore } from '@/stores/questionStore';
 const loginStore = useLoginStore()
+const questionStore = useQuestionStore()
 const input = ref('')
 const state = reactive({
     circleUrl:
@@ -91,6 +92,12 @@ const getImageUrl = (name: string) => {
 
 //测试用户
 const user = ref<User>(new User('小猪佩奇', 'touXiang01.png'));
+
+//搜索
+const search = () => {
+    questionStore.setSearchKey(input.value)
+    router.push('/search');
+}
 </script>
 
 <template>
@@ -100,7 +107,7 @@ const user = ref<User>(new User('小猪佩奇', 'touXiang01.png'));
             <div class="title" @click="backToMain">百度产品论坛</div>
         </div>
         <div class="searchInput">
-            <el-input v-model="input" placeholder="Please input" class="input-with-select">
+            <el-input v-model="input" placeholder="Please input" class="input-with-select" @keyup.enter="search">
                 <template #append>
                     <el-button :icon="Search" />
                 </template>

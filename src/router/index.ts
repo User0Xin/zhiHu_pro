@@ -24,9 +24,16 @@ const router = createRouter({
           name: 'detailPage',
           props: true,
           component: () => import('../components/question_detail/detail.vue')
+        },
+        {
           path: '/writeArticlePage',
           name: 'writeArticlePage',
           component: () => import('../views/writeArticlePage.vue')
+        },
+        {
+          path: '/search',
+          name: 'searchPage',
+          component: () => import('../components/main_left/searchPage.vue')
         }
       ]
     },
