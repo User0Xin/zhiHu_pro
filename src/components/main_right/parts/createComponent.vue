@@ -58,36 +58,6 @@ const handleStartCreate = () => {
                     <div style="margin-top: 5px;">写文章</div>
                 </div>
             </el-button>
-            <el-button link @click="handlePostVideo">
-                <div class="outSide">
-                    <div class="icon-box" style="background-color: #fff2e1;">
-                        <el-icon style="color: #ffa122;">
-                            <VideoCamera />
-                        </el-icon>
-                    </div>
-                    <div style="margin-top: 5px;">发视频</div>
-                </div>
-            </el-button>
-            <el-button link @click="handleAnswerQuestion">
-                <div class="outSide">
-                    <div class="icon-box" style="background-color: #fdf8e1;">
-                        <el-icon style="color: #f4c807;">
-                            <Document />
-                        </el-icon>
-                    </div>
-                    <div style="margin-top: 5px;">回答问题</div>
-                </div>
-            </el-button>
-            <el-button link @click="handleWriteThink">
-                <div class="outSide">
-                    <div class="icon-box" style="background-color: #e5f7f7;">
-                        <el-icon style="color: #26bfbf;">
-                            <PartlyCloudy />
-                        </el-icon>
-                    </div>
-                    <div style="margin-top: 5px;">写想法</div>
-                </div>
-            </el-button>
         </div>
 
         <!-- 小卡片 -->
@@ -99,7 +69,7 @@ const handleStartCreate = () => {
                     快来成为一名优秀的创作者吧！
                 </div>
             </div>
-            <img src="https://static.zhihu.com/heifetz/assets/kanshan.0c7f1d08.png" width="61">
+            <!-- <img src="https://static.zhihu.com/heifetz/assets/kanshan.0c7f1d08.png" width="61"> -->
         </div>
         <div>
             <el-button plain class="start-btn" @click="handleStartCreate"><el-icon>

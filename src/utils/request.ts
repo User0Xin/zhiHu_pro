@@ -1,6 +1,6 @@
 import axios from 'axios'
 import router from "@/router";
-import { serverIp } from "../../public/config";
+// import { serverIp } from "../../public/config";
 
 const request = axios.create({
     // baseURL: `http://${serverIp}:8081`,
@@ -13,7 +13,7 @@ const request = axios.create({
 // 比如统一加token，对请求参数统一加密
 request.interceptors.request.use(config => {
     config.headers['Content-Type'] = 'application/json;charset=utf-8';
-    let user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null
+    let user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string) : null
     if (user) {
         config.headers['token'] = user.token;  // 设置请求头
     }

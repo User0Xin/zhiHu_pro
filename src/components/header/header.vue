@@ -94,7 +94,10 @@ const user = ref<User>(new User('小猪佩奇', 'touXiang01.png'));
 
 <template>
     <div class="topBar">
-        <el-button link @click="backToMain">xxx产品论坛</el-button>
+        <div class="logo">
+            <img @click="backToMain" src="../../statistics/404.png" alt="logo">
+            <div class="title" @click="backToMain">百度产品论坛</div>
+        </div>
         <div class="searchInput">
             <el-input v-model="input" placeholder="Please input" class="input-with-select">
                 <template #append>
@@ -185,5 +188,19 @@ const user = ref<User>(new User('小猪佩奇', 'touXiang01.png'));
 
 .dialog-footer button:first-child {
     margin-right: 10px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+img {
+    width: 90px;
+    height: 90px;
+    justify-items: center;
+}
+.logo .title:hover {
+    cursor: default;
 }
 </style>

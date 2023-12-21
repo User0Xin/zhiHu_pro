@@ -10,7 +10,7 @@
             </el-icon>
             &nbsp;帮助中心
         </div>
-        <span>知乎隐私</span>
+        <span>隐私</span>
         <span>保护指引</span>
         <span>申请开通机构号</span>
         <span>联系我们</span>
@@ -38,7 +38,7 @@
             <br>药品医疗器械网络信息服务备案（京）网药械信息备字（2022）第00334号
             <br>广播电视节目制作经营许可证:（京）字第06591号 ·
             <br>服务热线：400-919-0001 · Investor Relations ·
-            <br>© 2023 产品论坛 北京智者天下科技有限公司版权所有 · 违法和不良信息举报：010-82716601 · 举报邮箱：jubao@zhihu.com
+            <br>© 2023 产品论坛 北京智者天下科技有限公司版权所有 · 违法和不良信息举报：010-82716601 · 举报邮箱：jubao.com
         </div>
 
     </div>
@@ -50,7 +50,13 @@
     padding-left: 3px;
     margin-top: 20px;
 }
-
+span{
+    font-size: small;
+}
+span:hover{
+    color: #409eff;
+    cursor: pointer;
+}
 .info-box div {
     margin-top: 10px;
     display: flex;

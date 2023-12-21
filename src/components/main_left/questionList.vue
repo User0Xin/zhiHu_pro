@@ -1,152 +1,105 @@
 <script setup lang="ts">
-import { h, inject, onMounted, ref, onBeforeUnmount } from 'vue'
+import router from '@/router';
+import request from '@/utils/request';
+import { h, inject, onMounted, ref, onBeforeUnmount, provide, watch } from 'vue'
 const count = inject('count') as any;
 const loadText = inject('loadText') as any;
 const hasMore = inject('hasMore') as any;
+const page = ref(1);
+const tab = inject('tab') as any;
+const orderBy = ref('like_num')//排序方式
+const method = ref('listQuestionByPage')//请求方法
+const idOrFlag = ref(1)//路径参数
+watch(tab, (newValue:string) => {
+   if(newValue == '推荐'){
+    method.value = 'listQuestionByPage';
+    hasMore.value = true;
+    orderBy.value = 'like_num';
+    console.log(orderBy.value)
+    page.value = 0;
+    questions.value = [];
+    load();
+   }else if(newValue == '最新发布'){
+    method.value = 'listQuestionByPage'
+    hasMore.value = true;
+    orderBy.value = 'time'
+    console.log(orderBy.value)
+    page.value = 0;
+    questions.value = [];
+    load();
+   }
+   else if(newValue == '我的问题'){
+    //先作是否登录的处理
+    questions.value = [];
+    hasMore.value = false;
+    console.log(questions)
+    return;
+    // method.value = 'listQuestionByUidByPage';
+    // orderBy.value = 'time';
+    // console.log(orderBy.value)
+    // page.value = 0;
+    // questions.value = [];
+    // load();
+   }
+});
 const load = () => {
-    // 判断是否到底
-    if (count.value + 5 > questions.length) {
-        count.value = questions.length;
-        loadText.value = '没有更多了';
-        hasMore.value = false;
-        return;
-    } else {
-        count.value = count.value + 5;
-    }
-
+    // 发送请求获取分页
+    request.get('/question/' + method.value + '/ '+ page.value + '/8/' + orderBy.value + '/' + idOrFlag.value).then( (res:any) => {
+        const more = res.data.page;
+        if(more.length == 0){
+            hasMore.value = false;
+            loadText.value = '没有更多了';
+            return
+        }
+        questions.value = questions.value.concat(more);
+    }).catch( (err:any) => {
+        console.log(err);
+    })
+    page.value++;
 }
-
-// 后续需要从后端获取数据
-const questions = [
-    {
-        title: "标题1",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-        collect: 3
-    },
-    {
-        title: "标题2",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-        collect: 3
-    },
-    {
-        title: "标题3",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-        collect: 3
-    },
-    {
-        title: "标题4",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-        collect: 3
-    },
-    {
-        title: "标题5",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-        collect: 3
-    },
-    {
-        title: "标题6",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-        collect: 3
-    },
-    {
-        title: "标题7",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-        collect: 3
-    },
-    {
-        title: "标题8",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-        collect: 3
-    },
-    {
-        title: "标题9",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-        collect: 3
-    },
-    {
-        title: "标题10",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-        collect: 3
-    },
-    {
-        title: "标题11",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-        collect: 3
-    },
-    {
-        title: "标题12",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-        collect: 3
-    },
-    {
-        title: "标题13",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-        collect: 3
-    },
-    {
-        title: "标题14",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-    },
-    {
-        title: "标题15",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-    },
-    {
-        title: "标题16",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
-    },
-    {
-        title: "标题17",
-        content: "94，男，研究生，南山某厂程序员，深圳湾公园附近租了个小单间，水电加起来4000左右。租的地方离公司近，走路十来分钟。工作日的一天大概如下：早上9点10-20起床，收拾洗漱。9点40-50出门，骑单车去公司。10点左右到公司楼下，卡着时间点领早餐（10点以后就没了）有时候能在10点前领上早餐，有时候错过，没领到会在公司附近买包子鸡蛋。10点-11点，吃早餐，忙的时候撸代码，不忙看英文技术博客。",
-        like: 1,
-        comment: 2,
+class question{
+    id: number;
+    authorId: number;
+    title: string;
+    content: string;
+    likeNum: number;
+    comment: number;
+    star: number;
+    isLiked: boolean;
+    isStared:boolean;
+    constructor(id: number,  authorId: number, title: string, content: string, likeNum: number, comment: number, star: number, isLiked: boolean, isStared:boolean){
+        this.id = id;
+        this.authorId = authorId;
+        this.title = title;
+        this.content = content;
+        this.likeNum = likeNum;
+        this.comment = comment;
+        this.star = star;
+        this.isLiked = isLiked;
+        this.isStared = isStared;
     }
-]
+}
+const questions = ref<question[]>([]);
 
 // 处理点赞逻辑
-const handleLike = () => {
+const handleLike = (question: any) => {
+    if(!question.isLiked) question.like++;
+    else question.like--;
+    question.isLiked = !question.isLiked;
     console.log("点赞");
 }
 
 // 处理评论逻辑
 const handleCommend = () => {
+    
     console.log("评论");
 }
 
 // 处理收藏逻辑
-const handleCollect = () => {
+const handleCollect = (question: any) => {
+    if(!question.isStared) question.star++;
+    else question.star--;
+    question.isStared = !question.isStared;
     console.log("收藏");
 }
 
@@ -156,15 +109,14 @@ const loadMoni = ref<HTMLElement | null>(null);
 let observer: IntersectionObserver | null = null;
 
 
-
 onMounted(() => {
     // 监听元素是否出现在视图中
     observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-            if (entry.isIntersecting) { //如果在视图中
+            if (entry.isIntersecting && hasMore.value) { //如果在视图中
                 load();
             } else {  //如果不在视图中 
-
+                
             }
         });
     });
@@ -172,6 +124,13 @@ onMounted(() => {
     if (loadMoni.value) {
         observer.observe(loadMoni.value);
     }
+    // 初始化questions
+    request.get('/question/listQuestionByPage/0/8/like_num/1').then( (res:any) => {
+        questions.value = res.data.page;
+        console.log(res.data);
+    }).catch( (err:any) => {
+        console.log(err);
+    })
 });
 // 组件卸载时取消观察
 onBeforeUnmount(() => {
@@ -180,21 +139,37 @@ onBeforeUnmount(() => {
     }
 });
 
-
-
+const toDetail = (id: number, authorId: number) => {
+    console.log(id)
+    router.push('/detailPage/' + authorId + '/' + id)
+}
+const toComment = (id: number, authorId: number) => {
+    router.push({path: '/detailPage/' + authorId + '/' + id, query: {to: 'comment'}})
+}
 </script>
 
 <template>
     <!-- 遍历问题列表渲染 -->
-    <div v-for="i in count" :key="i" class="questionCard">
-        <el-button class="title" link>{{ questions[i - 1].title }}</el-button>
-        <div class="content">
-            {{ questions[i - 1].content }}
+    <div v-for="question in questions" :key="question.id" class="questionCard">
+        <el-button class="title" link @click="toDetail(question.id, question.authorId)">{{ question.title }}</el-button>
+        <div class="content" @click="toDetail(question.id, question.authorId)">
+            <el-text line-clamp="3"> 
+                {{ question.content }}
+            </el-text>
         </div>
         <div class="optitions">
-            <el-button link @click="handleLike">点赞<span>{{ questions[i - 1].like }}</span></el-button>
-            <el-button link @click="handleCommend">评论<span>{{ questions[i - 1].comment }}</span></el-button>
-            <el-button link @click="handleCollect">收藏<span>{{ questions[i - 1].collect }}</span></el-button>
+            <div>
+                <el-button link @click="handleLike(question)"><span class="iconfont icon-icon" :class="{'checked' : question.isLiked}"></span></el-button>
+                <span class="number">{{ question.likeNum }}</span>
+            </div>
+            <div @click="toComment(question.id, question.authorId)">
+                <el-button link @click="handleCommend"><span class="iconfont icon-31pinglun"></span></el-button>
+                <span class="number">{{ question.comment }}</span>
+            </div>
+            <div>
+                <el-button link @click="handleCollect(question)"><span class="iconfont icon-shoucang" :class="{'checked' : question.isStared}"></span></el-button>
+                <span class="number">{{ question.star }}</span>
+            </div>
         </div>
     </div>
     <div class="loadMore" ref="loadMoni">
@@ -212,6 +187,10 @@ a {
 .questionCard {
     padding: 20px;
     border-bottom: 1px solid rgb(212, 212, 212);
+    padding-bottom: 10px;
+}
+.questionCard:hover{
+    cursor: pointer;
 }
 
 
@@ -225,6 +204,8 @@ a {
     font-size: 15px;
     margin-top: 5px;
     margin-bottom: 5px;
+    width: 96%;
+    margin-left: 2%;
 }
 
 .optitions {
@@ -235,5 +216,30 @@ a {
 .loadMore {
     display: flex;
     justify-content: center;
+}
+/** iconfont样式 */
+.iconfont {
+    font-size: 20px;
+    margin-right: 3px;
+}
+.iconfont:hover {
+    color: #409eff;
+}
+.number{
+    font-size: 15px;
+}
+.icon-shoucang{
+    margin-bottom: 2px;
+}
+.icon-icon{
+    margin-bottom: 5px;
+}
+
+
+.checked{
+    color: #409eff;
+}
+.loadMore{
+    margin-top: 15px;
 }
 </style>

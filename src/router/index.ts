@@ -18,6 +18,12 @@ const router = createRouter({
           path: '/personalPage',
           name: 'personalPage',
           component: () => import('../views/personalPage.vue')
+        },
+        {
+          path: '/detailPage/:authorId/:id',
+          name: 'detailPage',
+          props: true,
+          component: () => import('../components/question_detail/detail.vue')
         }
       ]
     },

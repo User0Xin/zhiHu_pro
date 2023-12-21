@@ -16,7 +16,7 @@ const changeDisplay = (flag: boolean) => {
                 mainRef.value.style.display = 'block';
                 leftRef.value.style.marginLeft = '18.5%';
                 rightRef.value.style.position = 'fixed';
-                rightRef.value.style.bottom = '60%';
+                rightRef.value.style.bottom = '80vh';
                 rightRef.value.style.right = '18.5%';
             }
         } else {
@@ -68,7 +68,8 @@ onBeforeUnmount(() => {
         <div class="right" ref="rightRef">
             <sideComponent></sideComponent>
         </div>
-        <div style=" position: absolute; right: 133px; top: 1259px;" ref="observee"></div>
+        <div style=" position: absolute; right: 133px; top: 1259px;" ref="observee">
+        </div>
     </div>
 </template>
 
