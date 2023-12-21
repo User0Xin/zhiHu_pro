@@ -8,6 +8,13 @@ import router from './router'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import mavonEditor from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
+
+
+
+
+
 const app = createApp(App)
 
 
@@ -17,4 +24,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.use(createPinia())
 app.use(router)
 app.use(ElementPlus)
+app.use(mavonEditor)
+
 app.mount('#app')
+

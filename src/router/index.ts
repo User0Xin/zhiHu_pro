@@ -24,6 +24,9 @@ const router = createRouter({
           name: 'detailPage',
           props: true,
           component: () => import('../components/question_detail/detail.vue')
+          path: '/writeArticlePage',
+          name: 'writeArticlePage',
+          component: () => import('../views/writeArticlePage.vue')
         }
       ]
     },

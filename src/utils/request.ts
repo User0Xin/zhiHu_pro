@@ -1,12 +1,12 @@
 import axios from 'axios'
 import router from "@/router";
-// import { serverIp } from "../../public/config";
 
 const request = axios.create({
     // baseURL: `http://${serverIp}:8081`,
     baseURL: 'http://localhost:8081',
     timeout: 30000
 })
+
 
 // request 拦截器
 // 可以自请求发送前对请求做一些处理
@@ -38,7 +38,7 @@ request.interceptors.response.use(
         // 当权限验证不通过的时候给出提示
         if (res.code === '401') {
             alert("权限不足请登录")
-            router.push("/")
+            router.push("/sign")
         }
         return res;
     },
@@ -46,7 +46,7 @@ request.interceptors.response.use(
         console.log('err' + error) // for debug
         if (error.message === "Request failed with status code 401") {
             alert("权限不足请登录");
-            router.push("/");
+            router.push("/sign");
         }
         return Promise.reject(error)
     }

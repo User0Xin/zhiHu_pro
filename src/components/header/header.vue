@@ -64,7 +64,8 @@ const toSign = ref(false);
 
 //登录
 const handleLogin = () => {
-    dialogFormVisible.value = true;
+    // dialogFormVisible.value = true;
+    router.push('/sign');
 }
 
 //跳转到注册页面
