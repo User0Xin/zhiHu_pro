@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { h, provide, ref } from 'vue'
+import { h, provide, ref, computed } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
 import questionList from '@/components/main_left/questionList.vue'
+import request from '@/utils/request';
 
 // 问题列表的数量
 const count = ref(15);
@@ -31,12 +32,34 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
     loadText.value = '加载更多';
 
     if (tab.props.name === '推荐') {
-        
+
     }
 }
 
-const hasNew = ref(true);
+const hasNew = ref(false);
 
+
+setInterval(() => {
+    const last = localStorage.getItem('lastQuestion')
+    if (last == null) {
+        hasNew.value = true;
+        return;
+    }
+    request.get('/question/lastQuestion').then((res: any) => {
+        const arr = res;
+        const date = new Date(arr[0], arr[1] - 1, arr[2], arr[3], arr[4], arr[5]);
+        const lastDate = new Date(last);
+        if (date > lastDate) {
+            hasNew.value = true
+            console.log(date, lastDate)
+            return;
+        }
+        else {
+            hasNew.value = false;
+            return;
+        }
+    })
+}, 3000)
 </script>
 
 <template>
@@ -46,7 +69,7 @@ const hasNew = ref(true);
             </el-tab-pane>
             <el-tab-pane label="最新发布" name="最新发布">
                 <template #label>
-                    <el-badge :is-dot="hasNew" class="item" value="new">最新发布</el-badge>
+                    <el-badge :is-dot="hasNew" class="item">最新发布</el-badge>
                 </template>
             </el-tab-pane>
             <el-tab-pane label="我的问题" name="我的问题">
@@ -58,7 +81,12 @@ const hasNew = ref(true);
 
 
 <style scoped>
-.newTabContainer{
+.box-card {
+    background-color: rgba(255, 255, 255, 0.9);
+    filter: blur(0.5px);
+}
+
+.newTabContainer {
     position: relative;
 }
 </style>

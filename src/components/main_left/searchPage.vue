@@ -63,7 +63,7 @@ const toComment = (id: number, authorId: number) => {
 
 <style scoped>
 .body{
-  /* background-color: #fff; */
+  background-color: rgba(255, 255, 255, 0.5);
   width: 60%;
   margin: 0 auto;
   border-radius: 10px;
@@ -79,6 +79,7 @@ const toComment = (id: number, authorId: number) => {
 .questionCard:hover{
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   transform: translateY(-1px) scale(1.01);
+  background-color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
 }
 .bottom{

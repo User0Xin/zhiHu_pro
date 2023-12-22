@@ -3,11 +3,11 @@ import router from '@/router';
 import { inject, onMounted, ref } from 'vue';
 import request from '@/utils/request';
 const currentAriticleId = router.currentRoute.value.params.id;
-const currentAuthorId = router.currentRoute.value.params.authorId;
+const currentUid = router.currentRoute.value.params.uid;
 const to = router.currentRoute.value.query.to;
 const commentDom = ref<HTMLElement | null>(null);
 onMounted(() => {
-    console.log('作者id ' + currentAuthorId);
+    console.log('作者id ' + currentUid);
     console.log('文章id ' + currentAriticleId);
     if (to == 'comment') {
         commentDom.value?.scrollIntoView({ behavior: "smooth", block: 'start' });

@@ -49,6 +49,8 @@
 .info-box {
     padding-left: 3px;
     margin-top: 20px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
 }
 span{
     font-size: small;

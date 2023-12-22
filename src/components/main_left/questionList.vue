@@ -6,7 +6,7 @@ import { h, inject, onMounted, ref, onBeforeUnmount, provide, watch, computed } 
 const count = inject('count') as any;
 const loadText = inject('loadText') as any;
 const hasMore = inject('hasMore') as any;
-const page = ref(1);
+const page = ref(2);
 const tab = inject('tab') as any;
 const orderBy = ref('like_num')//排序方式
 const method = ref('listQuestionByPage')//请求方法
@@ -30,31 +30,31 @@ watch(tab, (newValue: string) => {
         load();
     }
     else if (newValue == '我的问题') {
-        if(localStorage.getItem('isLogin') == null){
-        //先作是否登录的处理
+        if (localStorage.getItem('isLogin') == null) {
+            //先作是否登录的处理
             pleaseLogin();
             questions.value = [];
             hasMore.value = false;
             console.log(questions)
             return;
         }
-        else{
+        else {
 
         }
     }
 });
 
 const pleaseLogin = () => {
-  ElNotification({
-    title: '提示',
-    message: '请先登录',
-    type: 'warning',
-    offset: 50
-  })
+    ElNotification({
+        title: '提示',
+        message: '请先登录',
+        type: 'warning',
+        offset: 50
+    })
 }
 const load = () => {
     // 发送请求获取分页
-    request.get('/question/' + method.value + '/ ' + page.value + '/8/' + orderBy.value + '/' + idOrFlag.value).then((res: any) => {
+    request.get('/question/' + method.value + '/ ' + page.value + '/10/' + orderBy.value + '/' + idOrFlag.value).then((res: any) => {
         const more = res.data.page;
         if (more.length == 0) {
             hasMore.value = false;
@@ -69,7 +69,7 @@ const load = () => {
 }
 class question {
     id: number;
-    authorId: number;
+    uid: number;
     title: string;
     content: string;
     likeNum: number;
@@ -77,9 +77,12 @@ class question {
     star: number;
     isLiked: boolean;
     isStared: boolean;
-    constructor(id: number, authorId: number, title: string, content: string, likeNum: number, comment: number, star: number, isLiked: boolean, isStared: boolean) {
+    coverurl: string;
+    videourl: string;
+    time: Array<number>;
+    constructor(id: number, uid: number, title: string, content: string, likeNum: number, comment: number, star: number, isLiked: boolean, isStared: boolean, coverurl: string, videourl: string, time: Array<number>) {
         this.id = id;
-        this.authorId = authorId;
+        this.uid = uid;
         this.title = title;
         this.content = content;
         this.likeNum = likeNum;
@@ -87,21 +90,22 @@ class question {
         this.star = star;
         this.isLiked = isLiked;
         this.isStared = isStared;
+        this.coverurl = coverurl;
+        this.videourl = videourl;
+        this.time = time;
     }
 }
 const questions = ref<question[]>([]);
 
 // 处理点赞逻辑
 const handleLike = (question: any) => {
-    if(iftop && question.id == topQuestion.value.id){
+    if (iftop && question.id == topQuestion.value.id) {
         if (!question.isLiked) question.likeNum++;
         else question.likeNum--;
         question.isLiked = !question.isLiked;
         localStorage.setItem('topQuestion', JSON.stringify(question));
-        iftop.value = false;
-        iftop.value = true;
     }
-    else{
+    else {
         if (!question.isLiked) question.likeNum++;
         else question.likeNum--;
         question.isLiked = !question.isLiked;
@@ -144,9 +148,10 @@ onMounted(() => {
         observer.observe(loadMoni.value);
     }
     // 初始化questions
-    request.get('/question/listQuestionByPage/0/8/like_num/1').then((res: any) => {
+    request.get('/question/listQuestionByPage/1/10/like_num/1').then((res: any) => {
+        console.log(page.value)
         questions.value = res.data.page;
-        console.log(res.data);
+        console.log(res.data.page);
     }).catch((err: any) => {
         console.log(err);
     })
@@ -158,12 +163,23 @@ onBeforeUnmount(() => {
     }
 });
 
-const toDetail = (id: number, authorId: number) => {
-    console.log(id)
-    router.push('/detailPage/' + authorId + '/' + id)
+const toDetail = (question: question) => {
+    const lastQuestionTime = localStorage.getItem('lastQuestion');
+    const arr = question.time;
+    const date = new Date(arr[0], arr[1] - 1, arr[2], arr[3], arr[4], arr[5]);
+    if (lastQuestionTime == null) {
+        localStorage.setItem('lastQuestion', date.toString());
+    }
+    else {
+        const lastTime = new Date(lastQuestionTime);
+        if (date > lastTime) {
+            localStorage.setItem('lastQuestion', date.toString());
+        }
+    }
+    router.push('/detailPage/' + question.uid + '/' + question.id)
 }
-const toComment = (id: number, authorId: number) => {
-    router.push({ path: '/detailPage/' + authorId + '/' + id, query: { to: 'comment' } })
+const toComment = (id: number, uid: number) => {
+    router.push({ path: '/detailPage/' + uid + '/' + id, query: { to: 'comment' } })
 }
 //设置置顶
 const topQuestion = ref(localStorage.getItem('topQuestion') ? JSON.parse(localStorage.getItem('topQuestion')!) : null)
@@ -180,7 +196,7 @@ const cancelTop = () => {
 }
 
 const filteredQuestions = computed(() => {
-    if(!iftop.value) return questions.value;
+    if (!iftop.value) return questions.value;
     else
         return questions.value.filter((question) => question.id != topQuestion.value.id);
 });
@@ -189,13 +205,16 @@ const filteredQuestions = computed(() => {
 
 <template>
     <div class="topQuestionCard" v-if="iftop && tab != '我的问题'">
-            <el-button class="title" link @click="toDetail(topQuestion.id, topQuestion.authorId)">{{ topQuestion.title }}</el-button>
+        <el-icon class="icon01">
+            <Link />
+        </el-icon>
+        <el-button class="title" link @click="toDetail(topQuestion)">{{ topQuestion.title }}</el-button>
         <div class="alreadeyTop" @click="cancelTop()">
             <el-icon>
                 <StarFilled />
             </el-icon>
         </div>
-        <div class="content" @click="toDetail(topQuestion.id, topQuestion.topQuestion)">
+        <div class="content" @click="toDetail(topQuestion)">
             <el-text line-clamp="3">
                 {{ topQuestion.content }}
             </el-text>
@@ -206,7 +225,7 @@ const filteredQuestions = computed(() => {
                         :class="{ 'checked': topQuestion.isLiked }"></span></el-button>
                 <span class="number">{{ topQuestion.likeNum }}</span>
             </div>
-            <div @click="toComment(topQuestion.id, topQuestion.authorId)">
+            <div @click="toComment(topQuestion.id, topQuestion.uid)">
                 <el-button link @click="handleCommend"><span class="iconfont icon-31pinglun"></span></el-button>
                 <span class="number">{{ topQuestion.comment }}</span>
             </div>
@@ -221,11 +240,11 @@ const filteredQuestions = computed(() => {
 
     <!-- 遍历问题列表渲染 -->
     <div v-for="question in filteredQuestions" :key="question.id" class="questionCard">
-        <el-button class="title" link @click="toDetail(question.id, question.authorId)">{{ question.title }}</el-button>
+        <el-button class="title" link @click="toDetail(question)">{{ question.title }}</el-button>
         <div class="top" @click="setTop(question)"><el-icon>
                 <StarFilled />
             </el-icon></div>
-        <div class="content" @click="toDetail(question.id, question.authorId)">
+        <div class="content" @click="toDetail(question)">
             <el-text line-clamp="3">
                 {{ question.content }}
             </el-text>
@@ -236,7 +255,7 @@ const filteredQuestions = computed(() => {
                         :class="{ 'checked': question.isLiked }"></span></el-button>
                 <span class="number">{{ question.likeNum }}</span>
             </div>
-            <div @click="toComment(question.id, question.authorId)">
+            <div @click="toComment(question.id, question.uid)">
                 <el-button link @click="handleCommend"><span class="iconfont icon-31pinglun"></span></el-button>
                 <span class="number">{{ question.comment }}</span>
             </div>
@@ -254,33 +273,49 @@ const filteredQuestions = computed(() => {
 
 
 <style scoped>
-.topQuestionCard{
-    /* background-color: red; */
-    /* border: 2px solid rgb(157, 192, 231); */
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s;
-}
-.alreadeyTop{
+.icon01 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 25px;
     color: #409eff;
 }
+
+.topQuestionCard {
+    /* border: 2px solid rgb(157, 192, 231); */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s;
+}
+
+.alreadeyTop {
+    color: #409eff;
+}
+
 a {
     color: inherit;
     text-decoration: none;
 }
 
-.questionCard, 
-.topQuestionCard{
+.questionCard,
+.topQuestionCard {
     padding: 20px;
+    margin-top: 5px;
     border-bottom: 1px solid rgb(212, 212, 212);
     padding-bottom: 10px;
     position: relative;
+    transition: all 0.5s;
+    border-radius: 10px;
 }
 
 .questionCard:hover {
     cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.95);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.top, .alreadeyTop{
+.top,
+.alreadeyTop {
     position: absolute;
     right: 15px;
     top: 20px;
@@ -346,4 +381,5 @@ a {
 
 .loadMore {
     margin-top: 15px;
-}</style>
+}
+</style>

@@ -14,8 +14,8 @@ const top = () => {
 </script>
 
 <template>
-  <router-view></router-view>
-  <div class="back" @click="back"></div>
+    <router-view></router-view>
+    <div class="back" @click="back"></div>
 </template>
 
 <style scoped>

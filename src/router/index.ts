@@ -20,7 +20,7 @@ const router = createRouter({
           component: () => import('../views/personalPage.vue')
         },
         {
-          path: '/detailPage/:authorId/:id',
+          path: '/detailPage/:uid/:id',
           name: 'detailPage',
           props: true,
           component: () => import('../components/question_detail/detail.vue')

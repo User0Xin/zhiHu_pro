@@ -150,7 +150,7 @@ const search = () => {
 <style scoped>
 .topBar {
 
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.8);
     display: inline-flex;
     width: 100%;
     height: 52px;

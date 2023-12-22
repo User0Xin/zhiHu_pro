@@ -31,10 +31,6 @@
       /* min-height: 100vh; */
       font-family: 'Montserrat', sans-serif;
       color: #F9F6EF;
-      background-image:
-        radial-gradient(circle at 50% 50%,
-          #2f3040,
-          #1f2020);
     }
   </style>
 </head>
@@ -76,23 +72,24 @@
         document.body.appendChild(str);
         const fs = 10 + 5 * parseFloat(getComputedStyle(str).fontSize);
         str.animate({
-          translate: `0 ${(y + fs) > vh ? vh - y : fs}px`,
+          // translate: `0 ${(y + fs) > vh ? vh - y : fs}px`,
+          translate: `0 25px`,
           opacity: 0,
           transform: `rotateX(${rand(1, 500)}deg) rotateY(${rand(1, 500)}deg)`
         }, {
           duration: delay,
           fill: 'forwards',
-
         });
         //could add a animation terminate listener, but why add the additional load
         setTimeout(() => {
+          // alert(`0 ${(y + fs) > vh ? vh - y : fs}px`)
           str.remove();
         }, delay);
-      }
 
+      }
     addEventListener("mousemove", (e) => {
       const { clientX, clientY } = e;
-      if (shouldDraw(clientX, clientY)) {
+      if (shouldDraw(clientX, clientY) && clientX < window.innerWidth - 20 && clientY < window.innerHeight - 55) {
         addStr(clientX, clientY);
         x1 = clientX;
         y1 = clientY;
