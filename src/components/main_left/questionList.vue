@@ -11,6 +11,7 @@ const tab = inject('tab') as any;
 const orderBy = ref('like_num')//排序方式
 const method = ref('listQuestionByPage')//请求方法
 const idOrFlag = ref(1)//路径参数
+const userId = localStorage.getItem('userId') ? localStorage.getItem('userId') : 0;
 watch(tab, (newValue: string) => {
     if (newValue == '推荐') {
         method.value = 'listQuestionByPage';
@@ -54,7 +55,7 @@ const pleaseLogin = () => {
 }
 const load = () => {
     // 发送请求获取分页
-    request.get('/question/' + method.value + '/ ' + page.value + '/10/' + orderBy.value + '/' + idOrFlag.value).then((res: any) => {
+    request.get('/question/' + method.value + '/ ' + page.value + '/10/' + orderBy.value + '/' + idOrFlag.value + '/' + userId).then((res: any) => {
         const more = res.data.page;
         if (more.length == 0) {
             hasMore.value = false;
@@ -99,17 +100,20 @@ const questions = ref<question[]>([]);
 
 // 处理点赞逻辑
 const handleLike = (question: any) => {
-    if (iftop && question.id == topQuestion.value.id) {
-        if (!question.isLiked) question.likeNum++;
-        else question.likeNum--;
-        question.isLiked = !question.isLiked;
-        localStorage.setItem('topQuestion', JSON.stringify(question));
-    }
-    else {
-        if (!question.isLiked) question.likeNum++;
-        else question.likeNum--;
-        question.isLiked = !question.isLiked;
-    }
+    request.post(`/question/likeQuestion/${userId}/${question.id}/${question.uid}/${question.isLiked ? -1 : 1}`)
+        .then(res => {
+            if (iftop.value && question.id == topQuestion.value.id) {
+                if (!question.isLiked) question.likeNum++;
+                else question.likeNum--;
+                question.isLiked = !question.isLiked;
+                localStorage.setItem('topQuestion', JSON.stringify(question));
+            }
+            else {
+                if (!question.isLiked) question.likeNum++;
+                else question.likeNum--;
+                question.isLiked = !question.isLiked;
+            }
+        })
 }
 
 // 处理评论逻辑
@@ -120,10 +124,21 @@ const handleCommend = () => {
 
 // 处理收藏逻辑
 const handleCollect = (question: any) => {
-    if (!question.isStared) question.star++;
-    else question.star--;
-    question.isStared = !question.isStared;
     console.log("收藏");
+    request.post(`/question/starQuestion/${userId}/${question.id}/${question.uid}/${question.isStared ? -1 : 1}`)
+        .then(res => {
+            if (iftop.value && question.id == topQuestion.value.id) {
+                if (!question.isStared) question.star++;
+                else question.star--;
+                question.isStared = !question.isStared;
+                localStorage.setItem('topQuestion', JSON.stringify(question));
+            }
+            else {
+                if (!question.isStared) question.star++;
+                else question.star--;
+                question.isStared = !question.isStared;
+            }
+        })
 }
 
 
@@ -148,7 +163,7 @@ onMounted(() => {
         observer.observe(loadMoni.value);
     }
     // 初始化questions
-    request.get('/question/listQuestionByPage/1/10/like_num/1').then((res: any) => {
+    request.get('/question/listQuestionByPage/1/10/like_num/1/' + userId).then((res: any) => {
         console.log(page.value)
         questions.value = res.data.page;
         console.log(res.data.page);
@@ -164,6 +179,7 @@ onBeforeUnmount(() => {
 });
 
 const toDetail = (question: question) => {
+    localStorage.setItem('questionDetail', JSON.stringify(question));
     const lastQuestionTime = localStorage.getItem('lastQuestion');
     const arr = question.time;
     const date = new Date(arr[0], arr[1] - 1, arr[2], arr[3], arr[4], arr[5]);
@@ -191,9 +207,20 @@ const setTop = (question: any) => {
 }
 
 const cancelTop = () => {
+    let exists = questions.value.some((question) => question.id == topQuestion.value.id);
+    if (exists) {
+        const newQuestion = JSON.parse(localStorage.getItem('topQuestion')!);
+        replaceQuestion(newQuestion);
+    }
     localStorage.removeItem('topQuestion');
     iftop.value = false;
 }
+//若置顶问题存在于问题列表中，更新问题
+const replaceQuestion = (newQuestion: question) => {
+    questions.value = questions.value.map(question =>
+        question.id === topQuestion.value.id ? newQuestion : question
+    );
+};
 
 const filteredQuestions = computed(() => {
     if (!iftop.value) return questions.value;
@@ -215,6 +242,9 @@ const filteredQuestions = computed(() => {
             </el-icon>
         </div>
         <div class="content" @click="toDetail(topQuestion)">
+            <div v-if="topQuestion.coverurl">
+                <img :src=topQuestion.coverurl alt="封面" style="width: 90px; height: 90px; margin-right: 10px;">
+            </div>
             <el-text line-clamp="3">
                 {{ topQuestion.content }}
             </el-text>
@@ -245,7 +275,10 @@ const filteredQuestions = computed(() => {
                 <StarFilled />
             </el-icon></div>
         <div class="content" @click="toDetail(question)">
-            <el-text line-clamp="3">
+            <div v-if="question.coverurl">
+                <img :src=question.coverurl alt="封面" style="width: 90px; height: 90px; margin-right: 10px;">
+            </div>
+            <el-text line-clamp="3" style="align-self: self-end;">
                 {{ question.content }}
             </el-text>
         </div>
@@ -273,6 +306,10 @@ const filteredQuestions = computed(() => {
 
 
 <style scoped>
+.content {
+    display: flex;
+}
+
 .icon01 {
     position: absolute;
     left: 0;

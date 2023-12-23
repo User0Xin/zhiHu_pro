@@ -2,14 +2,13 @@
 import { ref, reactive, toRefs, onMounted } from 'vue'
 import headerVue from '@/components/header/header.vue'
 
-
 </script>
 
 <template>
     <div class="container">
         <div class="glass"></div>
         <div class="body">
-            <el-container style="height: 100%">
+            <el-container style="height: 100%"  ref="headDom">
                 <!-- 头部导航栏 -->
                 <el-header style="padding: 0; position: fixed; width: 100%; z-index: 10;">
                     <headerVue></headerVue>
@@ -46,7 +45,6 @@ import headerVue from '@/components/header/header.vue'
 }
 
 .container {
-   
     position: relative;
 }
 .body{

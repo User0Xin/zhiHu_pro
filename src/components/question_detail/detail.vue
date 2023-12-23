@@ -6,83 +6,90 @@ const currentAriticleId = router.currentRoute.value.params.id;
 const currentUid = router.currentRoute.value.params.uid;
 const to = router.currentRoute.value.query.to;
 const commentDom = ref<HTMLElement | null>(null);
+const questionDetail = ref(JSON.parse(localStorage.getItem('questionDetail')!));
 onMounted(() => {
     console.log('作者id ' + currentUid);
     console.log('文章id ' + currentAriticleId);
     if (to == 'comment') {
         commentDom.value?.scrollIntoView({ behavior: "smooth", block: 'start' });
     }
+    request.get(`/user/getAuthorInfo/${localStorage.getItem('userId')}/${currentUid}`)
+    .then( res => {
+        console.log(res.data);
+        info.value = res.data
+        console.log(info.value);
+    })
 })
 
 const comment = ref([])
 
-class detailInfo {
+//问题作者的信息
+class authorInfo {
     name: string; // 作者名字
-    articleNum: number; // 作者文章数
-    followNum: number; // 作者粉丝数
+    questionNum: number; // 作者问题数
+    followedNum: number; // 作者粉丝数
     answerNum: number; // 作者回答数
-    url: string; // 作者头像
+    touXiang: string; // 作者头像
     isFollowed: boolean; // 当前用户是否关注了当前作者
-    likeNum: number; // 当前文章获赞数
-    star: number; // 当前文章收藏数
-    isLiked: boolean; // 当前文章是否被当前用户点赞
-    isStared: boolean; // 当前文章是否当前用户被收藏
-    time: string; // 当前文章发布时间
-    constructor(name: string, articleNum: number, followNum: number, answerNum: number, url: string, isFollowed: boolean, likeNum: number, star: number, isLiked: boolean, isStared: boolean, time: string) {
+    constructor(name: string, questionNum: number, followedNum: number, answerNum: number, touXiang: string, isFollowed: boolean) {
         this.name = name;
-        this.articleNum = articleNum;
-        this.followNum = followNum;
+        this.questionNum = questionNum;
+        this.followedNum = followedNum;
         this.answerNum = answerNum;
-        this.url = url;
+        this.touXiang = touXiang;
         this.isFollowed = isFollowed;
-        this.likeNum = likeNum;
-        this.star = star;
-        this.isLiked = isLiked;
-        this.isStared = isStared;
-        this.time = time;
     }
 }
 const url = '../../assets/img/touXiang02.png';
-const info = ref<detailInfo>(new detailInfo('小猪佩奇3号', 100, 200, 0, '../../assets/img/touXiang03.png', false, 300, 400, false, false, '2021-08-23 12:00:00'));
+const info = ref<authorInfo>(new authorInfo('小猪佩奇3号', 100, 200, 0, '../../assets/img/touXiang03.png', false));
+
+const setLocalStorage = () => {
+    localStorage.setItem('questionDetail', JSON.stringify(questionDetail.value));
+}
 
 const followTheAuthor = () => {
     console.log('关注作者');
+    request.post(`/user/followUser/${localStorage.getItem('userId')}/${currentUid}/${ info.value.isFollowed ? -1 : 1}`)
     info.value.isFollowed = !info.value.isFollowed;
+    setLocalStorage();
 }
 
+
 const handleLike = () => {
-    if (!info.value.isLiked) {
-        info.value.likeNum++;
+    if (!questionDetail.value.isLiked) {
+        questionDetail.value.likeNum++;
     } else {
-        info.value.likeNum--;
+        questionDetail.value.likeNum--;
     }
-    info.value.isLiked = !info.value.isLiked;
-    console.log("点赞");
+    questionDetail.value.isLiked = !questionDetail.value.isLiked;
+    setLocalStorage();
 }
 const handleCollect = () => {
-    if (!info.value.isStared) {
-        info.value.star++;
+    if (!questionDetail.value.isStared) {
+        questionDetail.value.star++;
     } else {
-        info.value.star--;
+        questionDetail.value.star--;
     }
-    info.value.isStared = !info.value.isStared;
-    console.log("收藏");
+    questionDetail.value.isStared = !questionDetail.value.isStared;
+    setLocalStorage();
 }
 const commentText = ref('');
-import { Search } from '@element-plus/icons-vue'
 </script>
 
 <template>
     <div class="body">
         <div class="article">
-            <div class="context" style="height: 1500px">
-                <span>&nbsp;&nbsp;&nbsp;&nbsp;问题内容</span>
+            <div class="video" v-if="questionDetail.videourl">
+                <video :src=questionDetail.videourl></video>
+            </div>
+            <div class="context">
+                &nbsp;&nbsp;&nbsp;&nbsp;{{ questionDetail.content }}
             </div>
             <div class="comment" ref="commentDom">
                 <span>评论区</span>
                 <div class="head">
                     <el-input v-model="commentText" autosize type="textarea" placeholder="快来发表你的高见吧！">
-                    
+
                     </el-input>
                 </div>
             </div>
@@ -102,11 +109,11 @@ import { Search } from '@element-plus/icons-vue'
             <div class="authorInfo">
                 <div>
                     <div>粉丝</div>
-                    <div class="number">{{ info.followNum }}</div>
+                    <div class="number">{{ info.followedNum }}</div>
                 </div>
                 <div>
                     <div>问题</div>
-                    <div class="number">{{ info.articleNum }}</div>
+                    <div class="number">{{ info.questionNum }}</div>
                 </div>
                 <div>
                     <div>回答</div>
@@ -116,21 +123,27 @@ import { Search } from '@element-plus/icons-vue'
             <div class="articleInfo">
                 <span>正在阅读：</span>
                 <div class="title">
-                    问题标题问题标题问题
+                    《{{ questionDetail.title }}》
                 </div>
                 <div style="padding-left: 10px;">
-                    <span style="color:darkgrey">{{ info.time }}</span>
+                    <span style="color:darkgrey">{{ questionDetail.time.join('-') }}</span>
                 </div>
                 <div class="likestar">
                     <div class="likecontain">
-                        <el-button link @click="handleLike"><span class="iconfont icon-icon"
-                                :class="{ 'already': info.isLiked }"></span></el-button>
-                        <span class="number">{{ info.likeNum }}</span>
+                        <el-button link @click="handleLike">
+                            <span class="iconfont icon-icon"
+                                :class="{ 'already': questionDetail.isLiked }">
+                            </span>
+                        </el-button>
+                        <div class="number">{{ questionDetail.likeNum }}</div>
                     </div>
-                    <div>
-                        <el-button link @click="handleCollect"><span class="iconfont icon-shoucang"
-                                :class="{ 'already': info.isStared }"></span></el-button>
-                        <span class="number">{{ info.star }}</span>
+                    <div class="likecontain">
+                        <el-button link @click="handleCollect">
+                            <span class="iconfont icon-shoucang"
+                                :class="{ 'already': questionDetail.isStared }">
+                            </span>
+                        </el-button>
+                        <div class="number">{{ questionDetail.star }}</div>
                     </div>
                 </div>
             </div>
@@ -146,12 +159,14 @@ import { Search } from '@element-plus/icons-vue'
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
+    opacity: 0.9;
 }
 
 .article {
     width: 68%;
     position: left;
     background-color: #fff;
+    border-radius: 10px;
 }
 
 .author {
@@ -171,6 +186,11 @@ import { Search } from '@element-plus/icons-vue'
 
 .context {
     /* margin-left: 30px; */
+    border-radius: 10px;
+    height: 1500px;
+    width: 100%;
+    word-wrap: break-word;
+    padding: 15px 20px;
 }
 
 img {
@@ -242,24 +262,17 @@ img {
     font-size: 20px;
     transition: all 0.5s;
     position: absolute;
+    transform: translateX(-2px);
 }
 
-.icon-icon {
-    transform: translateX(-1px);
-}
-
-.icon-shoucang {
-    transform: translateX(-3px);
-}
 
 .iconfont:hover {
     /* font-size: 30px; */
-    transform: scale(1.5);
+    transform:  translateX(-2px) scale(1.5);
     color: cadetblue;
 }
 
 .number {
-    display: block;
     font-size: small;
     text-align: center;
 }
@@ -284,5 +297,10 @@ img {
     border: 1px solid darkgray;
     /* display: flex; */
 }
-
+.video{
+    /* background-color: red; */
+    width: 90%;
+    margin: auto;
+    margin-top: 10px;
+}
 </style>

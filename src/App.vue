@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import router from '@/router';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 const back = () => {
   router.back();
 }
-const top = () => {
-  alert('top');
-  window.scrollTo(0, 0);
-}
-
-
 
 </script>
 
@@ -43,7 +38,6 @@ const top = () => {
   background-color: #ebe2cd;
   transform: translateY(-1px);
 }
-
 
 
 </style>
