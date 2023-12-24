@@ -13,11 +13,12 @@ import headerVue from '@/components/header/header.vue'
                 <el-header style="padding: 0; position: fixed; width: 100%; z-index: 10;">
                     <headerVue></headerVue>
                 </el-header>
-                <el-scrollbar style="height: 100vh;">
+                <el-scrollbar>
                     <!-- 中央主体用路由跳转 -->
                     <el-main style="padding: 0;margin-top: 3.7%;">
                         <router-view></router-view>
                     </el-main>
+                    <el-backtop :right="100" :bottom="80" class="backtop" style="opacity: 0.8;"/>
                 </el-scrollbar>
             </el-container>
         </div>
@@ -26,10 +27,6 @@ import headerVue from '@/components/header/header.vue'
 </template>
 
 <style scoped>
-.mainContainer {
-    margin: 0 auto;
-}
-
 .left {
     margin-left: 23%;
     width: 42%;
@@ -48,7 +45,7 @@ import headerVue from '@/components/header/header.vue'
     position: relative;
 }
 .body{
-    z-index: 3;
+    z-index: 2;
 }
 .glass{
     background-image: url('../assets/img/03.jpg');

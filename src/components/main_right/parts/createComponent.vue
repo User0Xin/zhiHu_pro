@@ -10,6 +10,10 @@ const handleDraft = () => {
 const handleWriteArticle = () => {
     router.push('/writeArticlePage');
 }
+//切换动态视图
+const toFollowPage = () => {
+    router.push('/followPage');
+}
 
 // 点击发视频的逻辑
 const handlePostVideo = () => {
@@ -57,6 +61,16 @@ const handleStartCreate = () => {
                         </el-icon>
                     </div>
                     <div style="margin-top: 5px;">写文章</div>
+                </div>
+            </el-button>
+            <el-button link @click="toFollowPage">
+                <div class="outSide">
+                    <div class="icon-box" style="background-color: #e0ecff;">
+                        <el-icon style="color: #0066ff;">
+                            <HelpFilled />
+                        </el-icon>
+                    </div>
+                    <div style="margin-top: 5px;">动态</div>
                 </div>
             </el-button>
         </div>
@@ -114,7 +128,7 @@ const handleStartCreate = () => {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-
+    margin-right: 20px;
 }
 
 /* 图标盒子 */

@@ -7,6 +7,7 @@ const questionStore = useQuestionStore()
 
 onMounted(() => {
   console.log(questionStore.searchKey)
+  
 })
 
 class question {
@@ -22,19 +23,74 @@ class question {
   }
 }
 const questions = ref<question[]>([
-{
-  id: 1,
-  authorId: 1,
-  title: '这是一个问题',
-  content: '这是一个问题这是一个问'
-},
-{
-  id: 2,
-  authorId: 2,
-  title: '这是一个问题',
-  content: '这是一个问题这是一个问'
-},
-
+  {
+    id: 1,
+    authorId: 1,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },
+  {
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },
+  {
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },
 ]);
 const toDetail = (id: number, authorId: number) => {
   console.log(id)
@@ -46,29 +102,37 @@ const toComment = (id: number, authorId: number) => {
 </script>
 
 <template>
-  <div class="body">
-    <div v-for="question in questions" :key="question.id" class="questionCard">
-      <div class="title" link @click="toDetail(question.id, question.authorId)"><h2>{{ question.title }}</h2></div>
-      <div class="content" @click="toDetail(question.id, question.authorId)">
-        <el-text line-clamp="3">
-          {{ question.content }}  
-        </el-text>
+  <div class="contain">
+    <div class="body">
+      <div v-for="question in questions" :key="question.id" class="questionCard">
+        <div class="title" link @click="toDetail(question.id, question.authorId)">
+          <h2>{{ question.title }}</h2>
+        </div>
+        <div class="content" @click="toDetail(question.id, question.authorId)">
+          <el-text line-clamp="3">
+            {{ question.content }}
+          </el-text>
+        </div>
       </div>
-    </div>
-    <div class="bottom">
-      已经到底了哦
+      <div class="bottom">
+        已经到底了哦
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.body{
+.contain{
+  height: 91vh;
+}
+.body {
   background-color: rgba(255, 255, 255, 0.5);
   width: 60%;
   margin: 0 auto;
   border-radius: 10px;
 }
-.questionCard{
+
+.questionCard {
   /* margin-bottom: 5px; */
   padding-left: 10px;
   border-radius: 5px;
@@ -76,18 +140,17 @@ const toComment = (id: number, authorId: number) => {
   width: 99%;
   margin: 5px auto;
 }
-.questionCard:hover{
+
+.questionCard:hover {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   transform: translateY(-1px) scale(1.01);
   background-color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
 }
-.bottom{
+
+.bottom {
   height: 30px;
   text-align: center;
   padding-bottom: 10px;
-  color: darkgray;
-}
-
-
-</style>
+  color: #000;
+}</style>
