@@ -104,11 +104,15 @@ const questions = ref<question[]>([]);
 const handleLike = (question: any) => {
     request.post(`/question/likeQuestion/${userId}/${question.id}/${question.uid}/${question.isLiked ? -1 : 1}`)
         .then(res => {
-            if (iftop.value && question.id == topQuestion.value.id) {
+            let exists = topQuestion.value.some((questionItem: question) => questionItem.id == question.id);
+            if (iftop.value && exists) {//如果置顶的问题在问题列表中且在置顶列表中
                 if (!question.isLiked) question.likeNum++;
                 else question.likeNum--;
                 question.isLiked = !question.isLiked;
-                localStorage.setItem('topQuestion', JSON.stringify(question));
+                topQuestion.value = topQuestion.value.map((questionItem: question) =>
+                    questionItem.id === question.id ? question : questionItem
+                );
+                localStorage.setItem('topQuestion', JSON.stringify(topQuestion.value));
             }
             else {
                 if (!question.isLiked) question.likeNum++;
@@ -129,11 +133,15 @@ const handleCollect = (question: any) => {
     console.log("收藏");
     request.post(`/question/starQuestion/${userId}/${question.id}/${question.uid}/${question.isStared ? -1 : 1}`)
         .then(res => {
-            if (iftop.value && question.id == topQuestion.value.id) {
+            let exists = topQuestion.value.some((questionItem: question) => questionItem.id == question.id);
+            if (iftop.value && exists) {
                 if (!question.isStared) question.star++;
                 else question.star--;
                 question.isStared = !question.isStared;
-                localStorage.setItem('topQuestion', JSON.stringify(question));
+                topQuestion.value = topQuestion.value.map((questionItem: question) =>
+                    questionItem.id === question.id ? question : questionItem
+                );
+                localStorage.setItem('topQuestion', JSON.stringify(topQuestion.value));
             }
             else {
                 if (!question.isStared) question.star++;
@@ -200,42 +208,47 @@ const toComment = (id: number, uid: number) => {
     router.push({ path: '/detailPage/' + uid + '/' + id, query: { to: 'comment' } })
 }
 //设置置顶
-const topQuestion = ref(localStorage.getItem('topQuestion') ? JSON.parse(localStorage.getItem('topQuestion')!) : null)
+const topQuestion = ref<question[]>(localStorage.getItem('topQuestion') ? JSON.parse(localStorage.getItem('topQuestion')!) : [])
 const iftop = ref(localStorage.getItem('topQuestion') ? true : false);
 const setTop = (question: any) => {
-    // const topQuestionList = JSON.parse(localStorage.getItem('topQuestion')!);
-    // if(topQuestionList == null){//若置顶问题列表为空,直接set
-    //     localStorage.setItem('topQuestion', JSON.stringify(question));
-    //     topQuestion.value = localStorage.getItem('topQuestion') ? JSON.parse(localStorage.getItem('topQuestion')!) : null;
-    //     iftop.value = true;
-    // }
-    localStorage.setItem('topQuestion', JSON.stringify(question));
-    topQuestion.value = localStorage.getItem('topQuestion') ? JSON.parse(localStorage.getItem('topQuestion')!) : null;
+    topQuestion.value.push(question)
+    localStorage.setItem('topQuestion', JSON.stringify(topQuestion.value));
     iftop.value = true;
 }
 
-const cancelTop = () => {
-    let exists = questions.value.some((question) => question.id == topQuestion.value.id);
+const cancelTop = (question: question) => {
+    let exists = questions.value.some((questionItem) => questionItem.id == question.id);
     if (exists) {
-        const newQuestion = JSON.parse(localStorage.getItem('topQuestion')!);
-        replaceQuestion(newQuestion);
+        replaceQuestion(question);
     }
-    localStorage.removeItem('topQuestion');
-    iftop.value = false;
+    // localStorage.removeItem('topQuestion');
+    topQuestion.value = topQuestion.value.filter((questionItem: question) => questionItem.id !== question.id);
+    localStorage.setItem('topQuestion', JSON.stringify(topQuestion.value));
+    if (topQuestion.value.length == 0) {
+        localStorage.removeItem('topQuestion');
+        iftop.value = false;
+    }
 }
 //若置顶问题存在于问题列表中，更新问题
 const replaceQuestion = (newQuestion: question) => {
     questions.value = questions.value.map(question =>
-        question.id === topQuestion.value.id ? newQuestion : question
+        question.id === newQuestion.id ? newQuestion : question
     );
 };
 
+// const filteredQuestions = computed(() => {
+//     if (!iftop.value) return questions.value;
+//     else
+//         return questions.value.filter((question) => question.id != topQuestion.value.id);
+// });
 const filteredQuestions = computed(() => {
+    console.log(topQuestion.value)
     if (!iftop.value) return questions.value;
     else
-        return questions.value.filter((question) => question.id != topQuestion.value.id);
+        return questions.value.filter(question =>
+            topQuestion.value && !topQuestion.value.some((top: question) => top.id === question.id)
+        );
 });
-
 //匹配文本中的img标签
 const imgTagRegex = /< img\b[^>]*>/gi;
 const headingRegex = /^#+\s/gm; // 匹配以#开头的行
@@ -247,38 +260,38 @@ const noMkContent = (content: string) => {
 </script>
 
 <template>
-    <div class="topQuestionCard" v-if="iftop && tab != '我的问题'">
+    <div class="topQuestionCard" v-if="iftop && tab != '我的问题'" v-for="question in topQuestion">
         <el-icon class="icon01">
             <Link />
         </el-icon>
-        <el-button class="title" link @click="toDetail(topQuestion)">{{ topQuestion.title }}</el-button>
-        <div class="alreadeyTop" @click="cancelTop()">
+        <el-button class="title" link @click="toDetail(question)">{{ question.title }}</el-button>
+        <div class="alreadeyTop" @click="cancelTop(question)">
             <el-icon>
                 <StarFilled />
             </el-icon>
         </div>
-        <div class="content" @click="toDetail(topQuestion)">
-            <div v-if="topQuestion.coverurl">
-                <img :src=topQuestion.coverurl alt="封面" style="width: 90px; height: 90px; margin-right: 10px;">
+        <div class="content" @click="toDetail(question)">
+            <div v-if="question.coverurl">
+                <img :src=question.coverurl alt="封面" style="width: 90px; height: 90px; margin-right: 10px;">
             </div>
             <el-text line-clamp="3">
-                {{ noMkContent(topQuestion.content) }}
+                {{ noMkContent(question.content) }}
             </el-text>
         </div>
         <div class="optitions">
             <div>
-                <el-button link @click="handleLike(topQuestion)"><span class="iconfont icon-icon"
-                        :class="{ 'checked': topQuestion.isLiked }"></span></el-button>
-                <span class="number">{{ topQuestion.likeNum }}</span>
+                <el-button link @click="handleLike(question)"><span class="iconfont icon-icon"
+                        :class="{ 'checked': question.isLiked }"></span></el-button>
+                <span class="number">{{ question.likeNum }}</span>
             </div>
-            <div @click="toComment(topQuestion.id, topQuestion.uid)">
+            <div @click="toComment(question.id, question.uid)">
                 <el-button link @click="handleCommend"><span class="iconfont icon-31pinglun"></span></el-button>
-                <span class="number">{{ topQuestion.comment }}</span>
+                <span class="number">{{ question.comment }}</span>
             </div>
             <div>
-                <el-button link @click="handleCollect(topQuestion)"><span class="iconfont icon-shoucang"
-                        :class="{ 'checked': topQuestion.isStared }"></span></el-button>
-                <span class="number">{{ topQuestion.star }}</span>
+                <el-button link @click="handleCollect(question)"><span class="iconfont icon-shoucang"
+                        :class="{ 'checked': question.isStared }"></span></el-button>
+                <span class="number">{{ question.star }}</span>
             </div>
         </div>
     </div>
