@@ -203,6 +203,12 @@ const toComment = (id: number, uid: number) => {
 const topQuestion = ref(localStorage.getItem('topQuestion') ? JSON.parse(localStorage.getItem('topQuestion')!) : null)
 const iftop = ref(localStorage.getItem('topQuestion') ? true : false);
 const setTop = (question: any) => {
+    // const topQuestionList = JSON.parse(localStorage.getItem('topQuestion')!);
+    // if(topQuestionList == null){//若置顶问题列表为空,直接set
+    //     localStorage.setItem('topQuestion', JSON.stringify(question));
+    //     topQuestion.value = localStorage.getItem('topQuestion') ? JSON.parse(localStorage.getItem('topQuestion')!) : null;
+    //     iftop.value = true;
+    // }
     localStorage.setItem('topQuestion', JSON.stringify(question));
     topQuestion.value = localStorage.getItem('topQuestion') ? JSON.parse(localStorage.getItem('topQuestion')!) : null;
     iftop.value = true;
@@ -233,8 +239,8 @@ const filteredQuestions = computed(() => {
 //匹配文本中的img标签
 const imgTagRegex = /< img\b[^>]*>/gi;
 const headingRegex = /^#+\s/gm; // 匹配以#开头的行
- // 匹配强调（* 或 _）
- const emphasisRegex = /(?:\*|_)(.*?)(?:\*|_)/g;
+// 匹配强调（* 或 _）
+const emphasisRegex = /(?:\*|_)(.*?)(?:\*|_)/g;
 const noMkContent = (content: string) => {
     return content.replace(imgTagRegex, '[图片]').replace(headingRegex, '').replace(emphasisRegex, '');
 }
@@ -281,7 +287,7 @@ const noMkContent = (content: string) => {
     <!-- 遍历问题列表渲染 -->
     <div v-for="question in filteredQuestions" :key="question.id" class="questionCard">
         <el-button class="title" link @click="toDetail(question)">{{ question.title }}</el-button>
-        <div class="top" @click="setTop(question)"><el-icon>
+        <div class="top" @click="setTop(question)" v-if="tab != '我的问题'"><el-icon>
                 <StarFilled />
             </el-icon></div>
         <div class="content" @click="toDetail(question)">

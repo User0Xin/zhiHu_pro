@@ -68,7 +68,7 @@ onBeforeUnmount(() => {
         <div class="right" ref="rightRef">
             <sideComponent></sideComponent>
         </div>
-        <div style=" position: absolute; right: 133px; top: 1259px;" ref="observee">
+        <div style=" position: absolute; right: 133px; top: 1259px; z-index: 10;" ref="observee">
         </div>
     </div>
 </template>

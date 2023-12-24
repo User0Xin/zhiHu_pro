@@ -9,8 +9,8 @@ const back = () => {
 </script>
 
 <template>
-    <router-view></router-view>
-    <div class="back" @click="back"></div>
+      <router-view></router-view>
+      <div class="back" @click="back"></div>
 </template>
 
 <style scoped>
@@ -18,7 +18,7 @@ const back = () => {
   width: 40px;
   height: 40px;
   background-color: rgb(223, 229, 237);
-  position: absolute;
+  position: fixed;
   top: 70px;
   left: 50px;
   border-radius: 50%;
