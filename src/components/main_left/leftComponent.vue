@@ -39,27 +39,27 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 const hasNew = ref(false);
 
 
-setInterval(() => {
-    const last = localStorage.getItem('lastQuestion')
-    if (last == null) {
-        hasNew.value = true;
-        return;
-    }
-    request.get('/question/lastQuestion').then((res: any) => {
-        const arr = res;
-        const date = new Date(arr[0], arr[1] - 1, arr[2], arr[3], arr[4], arr[5]);
-        const lastDate = new Date(last);
-        if (date > lastDate) {
-            hasNew.value = true
-            console.log(date, lastDate)
-            return;
-        }
-        else {
-            hasNew.value = false;
-            return;
-        }
-    })
-}, 3000)
+// setInterval(() => {
+//     const last = localStorage.getItem('lastQuestion')
+//     if (last == null) {
+//         hasNew.value = true;
+//         return;
+//     }
+//     request.get('/question/lastQuestion').then((res: any) => {
+//         const arr = res;
+//         const date = new Date(arr[0], arr[1] - 1, arr[2], arr[3], arr[4], arr[5]);
+//         const lastDate = new Date(last);
+//         if (date > lastDate) {
+//             hasNew.value = true
+//             console.log(date, lastDate)
+//             return;
+//         }
+//         else {
+//             hasNew.value = false;
+//             return;
+//         }
+//     })
+// }, 3000)
 </script>
 
 <template>
@@ -73,6 +73,8 @@ setInterval(() => {
                 </template>
             </el-tab-pane>
             <el-tab-pane label="我的问题" name="我的问题">
+            </el-tab-pane>
+            <el-tab-pane label="草稿箱" name="草稿箱">
             </el-tab-pane>
         </el-tabs>
         <questionList></questionList>

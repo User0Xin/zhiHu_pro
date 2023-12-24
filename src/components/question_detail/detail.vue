@@ -7,6 +7,7 @@ const currentUid = router.currentRoute.value.params.uid;
 const to = router.currentRoute.value.query.to;
 const commentDom = ref<HTMLElement | null>(null);
 const questionDetail = ref(JSON.parse(localStorage.getItem('questionDetail')!));
+const userId = localStorage.getItem('userId');
 onMounted(() => {
     console.log('作者id ' + currentUid);
     console.log('文章id ' + currentAriticleId);
@@ -56,6 +57,7 @@ const followTheAuthor = () => {
 
 
 const handleLike = () => {
+    request.post(`/question/likeQuestion/${userId}/${questionDetail.value.id}/${questionDetail.value.uid}/${questionDetail.value.isLiked ? -1 : 1}`)
     if (!questionDetail.value.isLiked) {
         questionDetail.value.likeNum++;
     } else {
@@ -63,8 +65,10 @@ const handleLike = () => {
     }
     questionDetail.value.isLiked = !questionDetail.value.isLiked;
     setLocalStorage();
+
 }
 const handleCollect = () => {
+    request.post(`/question/starQuestion/${userId}/${questionDetail.value.id}/${questionDetail.value.uid}/${questionDetail.value.isStared ? -1 : 1}`)
     if (!questionDetail.value.isStared) {
         questionDetail.value.star++;
     } else {

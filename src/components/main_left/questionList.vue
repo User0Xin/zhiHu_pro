@@ -6,7 +6,7 @@ import { h, inject, onMounted, ref, onBeforeUnmount, provide, watch, computed } 
 const count = inject('count') as any;
 const loadText = inject('loadText') as any;
 const hasMore = inject('hasMore') as any;
-const page = ref(2);
+const page = ref(1);
 const tab = inject('tab') as any;
 const orderBy = ref('like_num')//排序方式
 const method = ref('listQuestionByPage')//请求方法
@@ -17,16 +17,18 @@ watch(tab, (newValue: string) => {
         method.value = 'listQuestionByPage';
         hasMore.value = true;
         orderBy.value = 'like_num';
-        page.value = 0;
+        page.value = 1;
+        idOrFlag.value = 1;
         questions.value = [];
-        load();
+        // load();
     } else if (newValue == '最新发布') {
         method.value = 'listQuestionByPage'
         hasMore.value = true;
         orderBy.value = 'time'
-        page.value = 0;
+        page.value = 1;
+        idOrFlag.value = 1;
         questions.value = [];
-        load();
+        // load();
     }
     else if (newValue == '我的问题') {
         if (localStorage.getItem('isLogin') == null) {
@@ -40,11 +42,33 @@ watch(tab, (newValue: string) => {
             method.value = 'listQuestionByUidByPage'
             hasMore.value = true;
             orderBy.value = 'time'
-            page.value = 0;
+            idOrFlag.value = 1;
+            page.value = 1;
             questions.value = [];
-            load();
+            // load();
         }
     }
+    else if (newValue == '草稿箱') {
+        if (localStorage.getItem('isLogin') == null) {
+            //先作是否登录的处理
+            pleaseLogin();
+            questions.value = [];
+            hasMore.value = false;
+            return;
+        }
+        else {
+            method.value = 'listQuestionByUidByPage'
+            hasMore.value = true;
+            orderBy.value = 'time'
+            page.value = 1;
+            idOrFlag.value = 0;
+            questions.value = [];
+            // load();
+        }
+    }
+    setTimeout(() => {
+        if(questions.value.length == 0) load();
+    }, 300);
 });
 
 const pleaseLogin = () => {
@@ -63,6 +87,10 @@ const load = () => {
             hasMore.value = false;
             loadText.value = '没有更多了';
             return
+        }
+        if (more.length < 10) {
+            hasMore.value = false;
+            loadText.value = '没有更多了';
         }
         questions.value = questions.value.concat(more);
     }).catch((err: any) => {
@@ -170,16 +198,17 @@ onMounted(() => {
     });
     // 开始观察
     if (loadMoni.value) {
-        observer.observe(loadMoni.value);
+        observer.observe(loadMoni.value!);
     }
     // 初始化questions
-    request.get('/question/listQuestionByPage/1/10/like_num/1/' + userId).then((res: any) => {
-        console.log(page.value)
-        questions.value = res.data.page;
-        console.log(res.data.page);
-    }).catch((err: any) => {
-        console.log(err);
-    })
+    // request.get('/question/listQuestionByPage/1/10/like_num/1/' + userId).then((res: any) => {
+    //     console.log(page.value)
+    //     questions.value = res.data.page;
+    //     console.log(res.data.page);
+    // }).catch((err: any) => {
+    //     console.log(err);
+    // })
+    // load();
 });
 // 组件卸载时取消观察
 onBeforeUnmount(() => {
@@ -242,11 +271,10 @@ const replaceQuestion = (newQuestion: question) => {
 //         return questions.value.filter((question) => question.id != topQuestion.value.id);
 // });
 const filteredQuestions = computed(() => {
-    console.log(topQuestion.value)
     if (!iftop.value) return questions.value;
     else
         return questions.value.filter(question =>
-            topQuestion.value && !topQuestion.value.some((top: question) => top.id === question.id)
+            !topQuestion.value.some((top: question) => top.id === question.id)
         );
 });
 //匹配文本中的img标签
@@ -257,10 +285,16 @@ const emphasisRegex = /(?:\*|_)(.*?)(?:\*|_)/g;
 const noMkContent = (content: string) => {
     return content.replace(imgTagRegex, '[图片]').replace(headingRegex, '').replace(emphasisRegex, '');
 }
+//删除问题（限我的问题与草稿箱）
+const deleteQuestion = (question: question) => {
+
+    alert("删除问题")
+}
+
 </script>
 
 <template>
-    <div class="topQuestionCard" v-if="iftop && tab != '我的问题'" v-for="question in topQuestion">
+    <div class="topQuestionCard" v-if="iftop && tab != '我的问题' && tab != '草稿箱'" v-for="question in topQuestion">
         <el-icon class="icon01">
             <Link />
         </el-icon>
@@ -300,9 +334,16 @@ const noMkContent = (content: string) => {
     <!-- 遍历问题列表渲染 -->
     <div v-for="question in filteredQuestions" :key="question.id" class="questionCard">
         <el-button class="title" link @click="toDetail(question)">{{ question.title }}</el-button>
-        <div class="top" @click="setTop(question)" v-if="tab != '我的问题'"><el-icon>
+        <div class="top" @click="setTop(question)" v-if="tab != '我的问题' && tab != '草稿箱'">
+            <el-icon>
                 <StarFilled />
-            </el-icon></div>
+            </el-icon>
+        </div>
+        <div class="top" @click="deleteQuestion(question)" v-if="tab == '我的问题' || tab == '草稿箱'">
+            <el-icon>
+                <Delete />
+            </el-icon>
+        </div>
         <div class="content" @click="toDetail(question)">
             <div v-if="question.coverurl">
                 <img :src=question.coverurl alt="封面" style="width: 90px; height: 90px; margin-right: 10px;">

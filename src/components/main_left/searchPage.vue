@@ -7,6 +7,7 @@ const questionStore = useQuestionStore()
 
 onMounted(() => {
   console.log(questionStore.searchKey)
+  
 })
 
 class question {
