@@ -17,7 +17,6 @@ watch(tab, (newValue: string) => {
         method.value = 'listQuestionByPage';
         hasMore.value = true;
         orderBy.value = 'like_num';
-        console.log(orderBy.value)
         page.value = 0;
         questions.value = [];
         load();
@@ -25,7 +24,6 @@ watch(tab, (newValue: string) => {
         method.value = 'listQuestionByPage'
         hasMore.value = true;
         orderBy.value = 'time'
-        console.log(orderBy.value)
         page.value = 0;
         questions.value = [];
         load();
@@ -36,11 +34,15 @@ watch(tab, (newValue: string) => {
             pleaseLogin();
             questions.value = [];
             hasMore.value = false;
-            console.log(questions)
             return;
         }
         else {
-
+            method.value = 'listQuestionByUidByPage'
+            hasMore.value = true;
+            orderBy.value = 'time'
+            page.value = 0;
+            questions.value = [];
+            load();
         }
     }
 });
@@ -228,6 +230,14 @@ const filteredQuestions = computed(() => {
         return questions.value.filter((question) => question.id != topQuestion.value.id);
 });
 
+//匹配文本中的img标签
+const imgTagRegex = /< img\b[^>]*>/gi;
+const headingRegex = /^#+\s/gm; // 匹配以#开头的行
+ // 匹配强调（* 或 _）
+ const emphasisRegex = /(?:\*|_)(.*?)(?:\*|_)/g;
+const noMkContent = (content: string) => {
+    return content.replace(imgTagRegex, '[图片]').replace(headingRegex, '').replace(emphasisRegex, '');
+}
 </script>
 
 <template>
@@ -246,7 +256,7 @@ const filteredQuestions = computed(() => {
                 <img :src=topQuestion.coverurl alt="封面" style="width: 90px; height: 90px; margin-right: 10px;">
             </div>
             <el-text line-clamp="3">
-                {{ topQuestion.content }}
+                {{ noMkContent(topQuestion.content) }}
             </el-text>
         </div>
         <div class="optitions">
@@ -279,7 +289,7 @@ const filteredQuestions = computed(() => {
                 <img :src=question.coverurl alt="封面" style="width: 90px; height: 90px; margin-right: 10px;">
             </div>
             <el-text line-clamp="3" style="align-self: self-end;">
-                {{ question.content }}
+                {{ noMkContent(question.content) }}
             </el-text>
         </div>
         <div class="optitions">

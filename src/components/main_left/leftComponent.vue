@@ -84,9 +84,7 @@ setInterval(() => {
 .box-card {
     background-color: rgba(255, 255, 255, 0.9);
     filter: blur(0.5px);
+    width: 100%;
 }
 
-.newTabContainer {
-    position: relative;
-}
 </style>
