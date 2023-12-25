@@ -4,64 +4,92 @@ import request from '@/utils/request';
 import router from '@/router';
 const activeBox = ref(-1)//-1表示全部动态，其他表示某个作者动态
 const activeAuthor = ref(-1)//-1表示全部动态，其他表示某个作者动态
-const uid = ref(localStorage.getItem('uid'));//用户登录用户id
+const uid = ref(localStorage.getItem('userId'));//用户登录用户id
 onMounted(() => {
     //获取问题上方的关注列表，按最近更新时间排序
+    getFollowedAuthorList();
     //将最近更新时间存入localstorage，如果没有，则直接存，如果有，则比较时间，存入最新的时间，
     //并且对更改的作者进行标记，标记为true，表示有更新，标记为false，表示没有更新
     //获取所有问题列表，按时间排序
+    getFollowedQuestionList();
 })
 
+const getFollowedQuestionList = () => {
+    request.get(`/question/getQuestionById/${uid.value}`).then((res) => {
+        questionList.value = res.data.map((item: any) => ({
+            id: item.id,
+            uid: item.uid,
+            title: item.title,
+            coverurl: item.coverurl,
+            videourl: item.videourl,
+            content: item.content,
+            author: authorList.value.find(author => author.id === item.uid),
+            time: item.time
+        }));
+        console.log(questionList.value);
+    }).catch((err) => {
+        console.log(err);
+    })
+}
+const getFollowedAuthorList = () =>{
+    request.get(`/question/getUpdateUser/${uid.value}`).then((res) => {
+        authorList.value = res.data;
+    }).catch((err) => {
+        console.log(err);
+    })
+}
 
 class author {
     id: number;//作者id
     name: string;//作者名字
-    url: string;//作者头像
+    touXiang: string;//作者头像
     isFollowed = true;//当前用户是否关注了当前作者
     updateTime: Array<number>;//作者最近更新时间,localstorage存储上一次查看的时间，用以判断作者是否更新
-    constructor(id: number, name: string, url: string, updateTime: Array<number>) {
+    constructor(id: number, name: string, touXiang: string, updateTime: Array<number>) {
         this.id = id;
         this.name = name;
-        this.url = url;
+        this.touXiang = touXiang;
         this.updateTime = updateTime;
     }
 }
 class question {
     id: number;//问题id
+    uid: number;//问题作者id
     title: string;//问题标题
-    url: string;//问题封面
+    coverurl: string;//问题封面
     videourl: string;//问题是否有视频
     content: string;//问题内容
     author: author;//问题作者
     time: Array<number>;//问题发布时间
-    constructor(id: number, title: string, url: string, videourl: string, content: string, author: author, time: Array<number>) {
+    constructor(id: number, uid: number, title: string, coverurl: string, videourl: string, content: string, author: author, time: Array<number>) {
         this.id = id;
         this.title = title;
-        this.url = url;
+        this.coverurl = coverurl;
         this.videourl = videourl;
         this.content = content;
         this.author = author;
         this.time = time;
+        this.uid = uid;
     }
 }
 //作者列表（右侧上方，按照最近发布问题时间排序）
 const authorList = ref<author[]>([])
-authorList.value = ([
-    new author(1, "作者1", "src/assets/img/touXiang03.png", [2021, 10, 10, 10, 10, 10]),
-    new author(2, "作者2", "url", [2021, 10, 10, 10, 10, 10]),
-    new author(3, "作者3", "url", [2021, 10, 10, 10, 10, 10]),
-    new author(4, "作者4", "url", [2021, 10, 10, 10, 10, 10]),
-    new author(5, "作者5", "url", [2021, 10, 10, 10, 10, 10]),
-]);
+// authorList.value = ([
+//     new author(1, "作者1", "src/assets/img/touXiang03.png", [2021, 10, 10, 10, 10, 10]),
+//     new author(2, "作者2", "url", [2021, 10, 10, 10, 10, 10]),
+//     new author(3, "作者3", "url", [2021, 10, 10, 10, 10, 10]),
+//     new author(4, "作者4", "url", [2021, 10, 10, 10, 10, 10]),
+//     new author(5, "作者5", "url", [2021, 10, 10, 10, 10, 10]),
+// ]);
 
 const questionList = ref<question[]>([]);
-questionList.value = ([
-    new question(1, "问题1", "url", "videourl", "content", authorList.value[0], [2021, 10, 10, 10, 10, 10]),
-    new question(2, "问题2", "url", "videourl", "content", authorList.value[1], [2021, 10, 10, 10, 10, 10]),
-    new question(3, "问题3", "url", "videourl", "content", authorList.value[2], [2021, 10, 10, 10, 10, 10]),
-    new question(4, "问题4", "url", "videourl", "content", authorList.value[3], [2021, 10, 10, 10, 10, 10]),
-    new question(5, "问题5", "url", "videourl", "content", authorList.value[4], [2021, 10, 10, 10, 10, 10]),
-]);
+// questionList.value = ([
+//     new question(1, 1, "问题1", "url", "videourl", "content", authorList.value[0], [2021, 10, 10, 10, 10, 10]),
+//     new question(2, 1, "问题2", "url", "videourl", "content", authorList.value[1], [2021, 10, 10, 10, 10, 10]),
+//     new question(3, 1, "问题3", "url", "videourl", "content", authorList.value[2], [2021, 10, 10, 10, 10, 10]),
+//     new question(4, 1, "问题4", "url", "videourl", "content", authorList.value[3], [2021, 10, 10, 10, 10, 10]),
+//     new question(5, 1, "问题5", "url", "videourl", "content", authorList.value[4], [2021, 10, 10, 10, 10, 10]),
+// ]);
 
 const loadAllQuestion = () => {
     //获取所有问题列表，按时间排序
@@ -135,7 +163,7 @@ const toDetail = (question: question) => {
                     <div class="cover" style="position: relative;">
                         <el-badge :is-dot="hasNew(author)" class="item" style="position: absolute; right: 5px; top: 0; color: rgb(0, 174, 236);">
                         </el-badge>
-                        <img :src=author.url alt="头像"
+                        <img :src=author.touXiang alt="头像"
                             style="object-fit: cover; width: 100%; height: 100%; border-radius: 50%;">
                     </div>
                     <div>
@@ -149,7 +177,7 @@ const toDetail = (question: question) => {
                 <div class="card" v-for="question in questionList" :key="question.id">
                     <div class="authorhead">
                         <div class="headImg">
-                            <img :src=question.author.url alt="头像"
+                            <img :src=question.author.touXiang alt="头像"
                                 style="object-fit: cover; width: 100%; height: 100%; border-radius: 50%;">
                         </div>
                         <div>
@@ -172,6 +200,9 @@ const toDetail = (question: question) => {
 </template>
 
 <style scoped>
+.body{
+    min-height: 91vh;
+}
 .active {
     color: rgb(73, 197, 241);
 
@@ -192,7 +223,7 @@ const toDetail = (question: question) => {
 .rightbody {
     margin: 0 auto;
     width: 80%;
-    height: 92vh;
+    /* height: 92vh; */
 }
 
 /* .followList {

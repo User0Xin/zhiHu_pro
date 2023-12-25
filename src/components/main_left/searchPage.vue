@@ -55,42 +55,7 @@ const questions = ref<question[]>([
     authorId: 2,
     title: '这是一个问题',
     content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },
+  }
 ]);
 const toDetail = (id: number, authorId: number) => {
   console.log(id)
@@ -123,7 +88,7 @@ const toComment = (id: number, authorId: number) => {
 
 <style scoped>
 .contain{
-  height: 91vh;
+  min-height: 91vh;
 }
 .body {
   background-color: rgba(255, 255, 255, 0.5);
