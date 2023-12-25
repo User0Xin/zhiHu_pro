@@ -389,187 +389,193 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="body">
-        <div class="article">
-            <div class="video" v-if="questionDetail.videourl">
-                <video :src=questionDetail.videourl width="100%" height="100%" controls="true"></video>
-            </div>
-            <div class="context">
-                <mavon-editor class="md-show" v-model="questionDetail.content" :value="questionDetail.content"
-                    :subfield="false" :defaultOpen="'preview'" :toolbarsFlag="false" :editable="false" :scrollStyle="true"
-                    :ishljs="true" />
-            </div>
-            <div class="comment" ref="commentDom">
-                <span style="margin-left: 2%; font-size: 22px; font-weight: 500;">评论&nbsp;<span
-                        style="font-size: 16px; font-weight: 300;">{{
-                            questionDetail.comment
-                        }}</span></span>
-                <div class="head">
-                    <el-input v-model="commentText" type="textarea" maxlength="200" :rows="2" placeholder="快来发表你的高见吧！"
-                        show-word-limit>
-                    </el-input>
-                    <el-button style="height: 50px;" type="primary" @click="handleComment">发表</el-button>
+    <div class="contain">
+        <div class="body">
+            <div class="article">
+                <div class="video" v-if="questionDetail.videourl">
+                    <video :src=questionDetail.videourl width="100%" height="100%" controls="true"></video>
                 </div>
-                <div class="commentList">
-                    <div v-for="(commentItem, index) in commentList" :key="commentItem.id">
-                        <div class="commentItem">
-                            <div v-if="commentItem.isTop == 1" class="topTag">置顶</div>
-                            <div class="itemHead">
-                                <img src='../../assets/img/touXiang03.png' />
-                                <div>{{ commentItem.username }}</div>
-                            </div>
-                            <div class="item-content">
-                                <span>{{ commentItem.content }}</span>
-                            </div>
-                            <div class="item-foot-bar">
-                                <span style="margin-left: 2%; margin-right: 2%;">{{
-                                    handleTimeFormat(commentItem.createTime) }}</span>
-                                <el-button link @click="handleLikeRootComment(commentItem)">
-                                    <span class="iconfont icon-icon" :class="{ 'already': commentItem.isLiked }"
-                                        style="position: static;"></span>
-                                    <span>{{ commentItem.likeNum }}</span>
-                                </el-button>
-                                <el-button link @click="handleReplyComment(index, commentItem)">
-                                    <span style="margin-right: 1%;">回复</span>
-                                </el-button>
-                                <el-dropdown v-if="isMyQuestion" style="position: absolute; right: 2%;">
-                                    <el-button link>
-                                        <el-icon>
-                                            <More />
-                                        </el-icon>
+                <div class="context">
+                    <mavon-editor class="md-show" v-model="questionDetail.content" :value="questionDetail.content"
+                        :subfield="false" :defaultOpen="'preview'" :toolbarsFlag="false" :editable="false"
+                        :scrollStyle="true" :ishljs="true" />
+                </div>
+                <div class="comment" ref="commentDom">
+                    <span style="margin-left: 2%; font-size: 22px; font-weight: 500;">评论&nbsp;<span
+                            style="font-size: 16px; font-weight: 300;">{{
+                                questionDetail.comment
+                            }}</span></span>
+                    <div class="head">
+                        <el-input v-model="commentText" type="textarea" maxlength="200" :rows="2" placeholder="快来发表你的高见吧！"
+                            show-word-limit>
+                        </el-input>
+                        <el-button style="height: 50px;" type="primary" @click="handleComment">发表</el-button>
+                    </div>
+                    <div class="commentList">
+                        <div v-for="(commentItem, index) in commentList" :key="commentItem.id">
+                            <div class="commentItem">
+                                <div v-if="commentItem.isTop == 1" class="topTag">置顶</div>
+                                <div class="itemHead">
+                                    <img src='../../assets/img/touXiang03.png' />
+                                    <div>{{ commentItem.username }}</div>
+                                </div>
+                                <div class="item-content">
+                                    <span>{{ commentItem.content }}</span>
+                                </div>
+                                <div class="item-foot-bar">
+                                    <span style="margin-left: 2%; margin-right: 2%;">{{
+                                        handleTimeFormat(commentItem.createTime) }}</span>
+                                    <el-button link @click="handleLikeRootComment(commentItem)">
+                                        <span class="iconfont icon-icon" :class="{ 'already': commentItem.isLiked }"
+                                            style="position: static;"></span>
+                                        <span>{{ commentItem.likeNum }}</span>
                                     </el-button>
-                                    <template #dropdown>
-                                        <el-dropdown-menu>
-                                            <el-dropdown-item><span @click="handleToTopComment(commentItem)">{{
-                                                commentItem.isTop == 0 ? '置顶' : '取消置顶' }}</span>
-                                            </el-dropdown-item>
-                                            <el-dropdown-item
-                                                @click="handleDeleteComment(commentItem)">删除</el-dropdown-item>
-                                        </el-dropdown-menu>
-                                    </template>
-                                </el-dropdown>
-                            </div>
-                            <div class="reply-comment">
-                                <div v-for="(replyItem) in commentList[index].children">
-                                    <div class="replyItem">
-                                        <div class="itemHead">
-                                            <img src='../../assets/img/touXiang03.png' />
-                                            <div>{{ replyItem.username }}</div>
-                                            <div style="margin-left: 1%;">回复</div>
-                                            <div>{{ replyItem.targetUsername }}</div>
-                                        </div>
-                                        <div class="item-content">
-                                            <span>{{ replyItem.content }}</span>
-                                        </div>
-                                        <div class="item-foot-bar">
-                                            <span style="margin-left: 2%; margin-right: 2%;">{{
-                                                handleTimeFormat(replyItem.createTime) }}</span>
-                                            <el-button link @click="handleLikeReplyComment(commentItem, replyItem)">
-                                                <span class="iconfont icon-icon" :class="{ 'already': replyItem.isLiked }"
-                                                    style="position: static;"></span>
-                                                <span>{{ replyItem.likeNum }}</span>
-                                            </el-button>
-                                            <el-button link @click="handleReplyComment(index, replyItem)">
-                                                <span style="margin-right: 1%;">回复</span>
-                                            </el-button>
-                                            <el-dropdown v-if="isMyQuestion" style="position: absolute; right: 2%;">
-                                                <el-button link>
-                                                    <el-icon>
-                                                        <More />
-                                                    </el-icon>
+                                    <el-button link @click="handleReplyComment(index, commentItem)">
+                                        <span style="margin-right: 1%;">回复</span>
+                                    </el-button>
+                                    <el-dropdown v-if="isMyQuestion" style="position: absolute; right: 2%;">
+                                        <el-button link>
+                                            <el-icon>
+                                                <More />
+                                            </el-icon>
+                                        </el-button>
+                                        <template #dropdown>
+                                            <el-dropdown-menu>
+                                                <el-dropdown-item><span @click="handleToTopComment(commentItem)">{{
+                                                    commentItem.isTop == 0 ? '置顶' : '取消置顶' }}</span>
+                                                </el-dropdown-item>
+                                                <el-dropdown-item
+                                                    @click="handleDeleteComment(commentItem)">删除</el-dropdown-item>
+                                            </el-dropdown-menu>
+                                        </template>
+                                    </el-dropdown>
+                                </div>
+                                <div class="reply-comment">
+                                    <div v-for="(replyItem) in commentList[index].children">
+                                        <div class="replyItem">
+                                            <div class="itemHead">
+                                                <img src='../../assets/img/touXiang03.png' />
+                                                <div>{{ replyItem.username }}</div>
+                                                <div style="margin-left: 1%;">回复</div>
+                                                <div>{{ replyItem.targetUsername }}</div>
+                                            </div>
+                                            <div class="item-content">
+                                                <span>{{ replyItem.content }}</span>
+                                            </div>
+                                            <div class="item-foot-bar">
+                                                <span style="margin-left: 2%; margin-right: 2%;">{{
+                                                    handleTimeFormat(replyItem.createTime) }}</span>
+                                                <el-button link @click="handleLikeReplyComment(commentItem, replyItem)">
+                                                    <span class="iconfont icon-icon"
+                                                        :class="{ 'already': replyItem.isLiked }"
+                                                        style="position: static;"></span>
+                                                    <span>{{ replyItem.likeNum }}</span>
                                                 </el-button>
-                                                <template #dropdown>
-                                                    <el-dropdown-menu>
-                                                        <el-dropdown-item
-                                                            @click="handleDeleteReplyComment(index, commentItem, replyItem)">删除</el-dropdown-item>
-                                                    </el-dropdown-menu>
-                                                </template>
-                                            </el-dropdown>
+                                                <el-button link @click="handleReplyComment(index, replyItem)">
+                                                    <span style="margin-right: 1%;">回复</span>
+                                                </el-button>
+                                                <el-dropdown v-if="isMyQuestion" style="position: absolute; right: 2%;">
+                                                    <el-button link>
+                                                        <el-icon>
+                                                            <More />
+                                                        </el-icon>
+                                                    </el-button>
+                                                    <template #dropdown>
+                                                        <el-dropdown-menu>
+                                                            <el-dropdown-item
+                                                                @click="handleDeleteReplyComment(index, commentItem, replyItem)">删除</el-dropdown-item>
+                                                        </el-dropdown-menu>
+                                                    </template>
+                                                </el-dropdown>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div style="margin-top: -1%; margin-left: 2%;">
-                                    <el-pagination v-if="showPageBar[index]" v-model:current-page="currentPage[index]"
-                                        :page-size="5" layout="total, prev, pager, next" :total="totalNum[index]"
-                                        @current-change="(val: number) => { handleCurrentChange(val, commentItem, index) }" />
-                                </div>
+                                    <div style="margin-top: -1%; margin-left: 2%;">
+                                        <el-pagination v-if="showPageBar[index]" v-model:current-page="currentPage[index]"
+                                            :page-size="5" layout="total, prev, pager, next" :total="totalNum[index]"
+                                            @current-change="(val: number) => { handleCurrentChange(val, commentItem, index) }" />
+                                    </div>
 
-                            </div>
-                            <div style="margin-left: 7%;margin-top: -2%; font-size: 14px;"
-                                v-if="showMoreReply[index] && commentItem.replyNum > 3">
-                                共{{ commentItem.replyNum }}条回复,<el-button link style="font-size: 14px;"
-                                    @click="handleClickShowMoreReply(index)">点击查看</el-button>
-                            </div>
-                            <div class="replyInput" v-if="showMoreReplyInput[index]">
-                                <el-input v-model="replyCommentText[index]" type="textarea" maxlength="200" :rows="2"
-                                    :placeholder="placeholder[index]" show-word-limit>
-                                </el-input>
-                                <el-button style="height: 50px;" type="primary"
-                                    @click="handleReply(commentItem, index)">回复</el-button>
+                                </div>
+                                <div style="margin-left: 7%;margin-top: -2%; font-size: 14px;"
+                                    v-if="showMoreReply[index] && commentItem.replyNum > 3">
+                                    共{{ commentItem.replyNum }}条回复,<el-button link style="font-size: 14px;"
+                                        @click="handleClickShowMoreReply(index)">点击查看</el-button>
+                                </div>
+                                <div class="replyInput" v-if="showMoreReplyInput[index]">
+                                    <el-input v-model="replyCommentText[index]" type="textarea" maxlength="200" :rows="2"
+                                        :placeholder="placeholder[index]" show-word-limit>
+                                    </el-input>
+                                    <el-button style="height: 50px;" type="primary"
+                                        @click="handleReply(commentItem, index)">回复</el-button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div ref="more">没有更多了~</div>
-                </div>
-            </div>
-        </div>
-        <div class=" author">
-            <div class="head">
-                <img src='../../assets/img/touXiang03.png' />
-            </div>
-            <div class="name">
-                <span>{{ info.name }}</span>
-                <button @click="followTheAuthor"
-                    :style="{ backgroundColor: info.isFollowed ? 'rgb(227, 229, 231)' : 'rgb(100, 150, 200)', color: info.isFollowed ? 'rgb(169, 153, 167)' : 'white' }">
-                    <span v-if="!info.isFollowed">+ 关注</span>
-                    <span v-if="info.isFollowed">已关注</span>
-                </button>
-            </div>
-            <div class="authorInfo">
-                <div>
-                    <div>粉丝</div>
-                    <div class="number">{{ info.followedNum }}</div>
-                </div>
-                <div>
-                    <div>问题</div>
-                    <div class="number">{{ info.questionNum }}</div>
-                </div>
-                <div>
-                    <div>回答</div>
-                    <div class="number">{{ info.answerNum }}</div>
-                </div>
-            </div>
-            <div class="articleInfo">
-                <span>正在阅读：</span>
-                <div class="title">
-                    《{{ questionDetail.title }}》
-                </div>
-                <div style="padding-left: 10px;">
-                    <span style="color:darkgrey">{{ questionDetail.time.join('-') }}</span>
-                </div>
-                <div class="likestar">
-                    <div class="likecontain">
-                        <el-button link @click="handleLike">
-                            <span class="iconfont icon-icon" :class="{ 'already': questionDetail.isLiked }">
-                            </span>
-                        </el-button>
-                        <div class="number">{{ questionDetail.likeNum }}</div>
-                    </div>
-                    <div class="likecontain">
-                        <el-button link @click="handleCollect">
-                            <span class="iconfont icon-shoucang" :class="{ 'already': questionDetail.isStared }">
-                            </span>
-                        </el-button>
-                        <div class="number">{{ questionDetail.star }}</div>
+                        <div ref="more">没有更多了~</div>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class=" author">
+                <div class="head">
+                    <img src='../../assets/img/touXiang03.png' />
+                </div>
+                <div class="name">
+                    <span>{{ info.name }}</span>
+                    <button @click="followTheAuthor"
+                        :style="{ backgroundColor: info.isFollowed ? 'rgb(227, 229, 231)' : 'rgb(100, 150, 200)', color: info.isFollowed ? 'rgb(169, 153, 167)' : 'white' }">
+                        <span v-if="!info.isFollowed">+ 关注</span>
+                        <span v-if="info.isFollowed">已关注</span>
+                    </button>
+                </div>
+                <div class="authorInfo">
+                    <div>
+                        <div>粉丝</div>
+                        <div class="number">{{ info.followedNum }}</div>
+                    </div>
+                    <div>
+                        <div>问题</div>
+                        <div class="number">{{ info.questionNum }}</div>
+                    </div>
+                    <div>
+                        <div>回答</div>
+                        <div class="number">{{ info.answerNum }}</div>
+                    </div>
+                </div>
+                <div class="articleInfo">
+                    <span>正在阅读：</span>
+                    <div class="title">
+                        《{{ questionDetail.title }}》
+                    </div>
+                    <div style="padding-left: 10px;">
+                        <span style="color:darkgrey">{{ questionDetail.time.join('-') }}</span>
+                    </div>
+                    <div class="likestar">
+                        <div class="likecontain">
+                            <el-button link @click="handleLike">
+                                <span class="iconfont icon-icon" :class="{ 'already': questionDetail.isLiked }">
+                                </span>
+                            </el-button>
+                            <div class="number">{{ questionDetail.likeNum }}</div>
+                        </div>
+                        <div class="likecontain">
+                            <el-button link @click="handleCollect">
+                                <span class="iconfont icon-shoucang" :class="{ 'already': questionDetail.isStared }">
+                                </span>
+                            </el-button>
+                            <div class="number">{{ questionDetail.star }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+        </div>
     </div>
 </template>
 
 <style scoped>
+.contain{
+    height: 92vh;
+}
 .body {
     width: 63%;
     margin: 0 auto;

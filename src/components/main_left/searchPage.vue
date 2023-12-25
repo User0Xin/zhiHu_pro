@@ -56,6 +56,70 @@ const questions = ref<question[]>([
     title: '这是一个问题',
     content: '这是一个问题这是一个问'
   }
+  ,{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  }
+  ,{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  }
+  ,{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  }
+  ,{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  },{
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  }
 ]);
 const toDetail = (id: number, authorId: number) => {
   console.log(id)
