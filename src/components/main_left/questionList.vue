@@ -30,6 +30,60 @@ watch(tab, (newValue: string) => {
         questions.value = [];
         // load();
     }
+    else if (newValue == '我的收藏') {
+        if (localStorage.getItem('isLogin') == null) {
+            //先作是否登录的处理
+            pleaseLogin();
+            questions.value = [];
+            hasMore.value = false;
+            return;
+        }
+        else {
+            method.value = 'listQuestionByUidByPage'
+            hasMore.value = true;
+            orderBy.value = 'time'
+            idOrFlag.value = 1;
+            page.value = 1;
+            questions.value = [];
+            // load();
+        }
+    }
+    else if (newValue == '我的问题') {
+        if (localStorage.getItem('isLogin') == null) {
+            //先作是否登录的处理
+            pleaseLogin();
+            questions.value = [];
+            hasMore.value = false;
+            return;
+        }
+        else {
+            method.value = 'listQuestionByUidByPage'
+            hasMore.value = true;
+            orderBy.value = 'time'
+            idOrFlag.value = 1;
+            page.value = 1;
+            questions.value = [];
+            // load();
+        }
+    }
+    else if (newValue == '草稿箱') {
+        if (localStorage.getItem('isLogin') == null) {
+            //先作是否登录的处理
+            pleaseLogin();
+            questions.value = [];
+            hasMore.value = false;
+            return;
+        }
+        else {
+            method.value = 'listQuestionByUidByPage'
+            hasMore.value = true;
+            orderBy.value = 'time'
+            page.value = 1;
+            idOrFlag.value = 0;
+            questions.value = [];
+            // load();
+        }
+    }
     else if (newValue == '我的问题') {
         if (localStorage.getItem('isLogin') == null) {
             //先作是否登录的处理
@@ -67,7 +121,7 @@ watch(tab, (newValue: string) => {
         }
     }
     setTimeout(() => {
-        if  (questions.value.length == 0) load();
+        if (questions.value.length == 0) load();
     }, 300);
 });
 
@@ -177,6 +231,9 @@ const handleCollect = (question: any) => {
                 question.isStared = !question.isStared;
             }
         })
+    if (tab.value == '我的收藏' && !question.isStared) {
+        questions.value = questions.value.filter((questionItem: question) => questionItem.id !== question.id);
+    }
 }
 
 
@@ -218,8 +275,8 @@ onBeforeUnmount(() => {
 });
 
 const toDetail = (question: question) => {
-    if  (tab.value == '草稿箱') toWritePage(question);
-    else  {
+    if (tab.value == '草稿箱') toWritePage(question);
+    else {
         localStorage.setItem('questionDetail', JSON.stringify(question));
         const lastQuestionTime = localStorage.getItem('lastQuestion');
         const arr = question.time;
@@ -236,8 +293,9 @@ const toDetail = (question: question) => {
         router.push('/detailPage/' + question.uid + '/' + question.id)
     }
 }
-const toComment = (id: number, uid: number) => {
-    router.push({ path: '/detailPage/' + uid + '/' + id, query: { to: 'comment' } })
+const toComment = (question: question) => {
+    localStorage.setItem('questionDetail', JSON.stringify(question));
+    router.push({ path: '/detailPage/' + question.uid + '/' + question.id, query: { to: 'comment' } })
 }
 //设置置顶
 const topQuestion = ref<question[]>(localStorage.getItem('topQuestion') ? JSON.parse(localStorage.getItem('topQuestion')!) : [])
@@ -290,11 +348,20 @@ const noMkContent = (content: string) => {
 }
 //删除问题（限我的问题与草稿箱）
 const deleteQuestion = (question: question) => {
-
-    alert("删除问题")
+    request.delete('/question/deleteQuestion/' + question.id).then((res: any) => {
+        ElNotification({
+            title: '提示',
+            message: '删除成功',
+            type: 'success',
+            offset: 50
+        })
+        questions.value = questions.value.filter((questionItem: question) => questionItem.id !== question.id);
+    }).catch((err: any) => {
+        console.log(err);
+    })
 }
 
-const toWritePage = (question: question) =>  {
+const toWritePage = (question: question) => {
     localStorage.setItem("questionDraft", JSON.stringify(question));
     router.push("/writeArticlePage");
 }
@@ -302,83 +369,86 @@ const toWritePage = (question: question) =>  {
 </script>
 
 <template>
-    <div class="topQuestionCard" v-if="iftop && tab != '我的问题' && tab != '草稿箱'" v-for="question in topQuestion">
-        <el-icon class="icon01">
-            <Link />
-        </el-icon>
-        <el-button class="title" link @click="toDetail(question)">{{ question.title }}</el-button>
-        <div class="alreadeyTop" @click="cancelTop(question)">
-            <el-icon>
-                <StarFilled />
+    <div class="contain">
+        <div class="topQuestionCard" v-if="iftop && tab != '我的问题' && tab != '草稿箱' && tab != '我的收藏'"
+            v-for="question in topQuestion">
+            <el-icon class="icon01">
+                <Link />
             </el-icon>
+            <el-button class="title" link @click="toDetail(question)">{{ question.title }}</el-button>
+            <div class="alreadeyTop" @click="cancelTop(question)">
+                <el-icon>
+                    <StarFilled />
+                </el-icon>
+            </div>
+            <div class="content" @click="toDetail(question)">
+                <div v-if="question.coverurl">
+                    <img :src=question.coverurl alt="封面" style="width: 90px; height: 90px; margin-right: 10px;">
+                </div>
+                <el-text line-clamp="3">
+                    {{ noMkContent(question.content) }}
+                </el-text>
+            </div>
+            <div class="options">
+                <div>
+                    <el-button link @click="handleLike(question)"><span class="iconfont icon-icon"
+                            :class="{ 'checked': question.isLiked }"></span></el-button>
+                    <span class="number">{{ question.likeNum }}</span>
+                </div>
+                <div @click="toComment(question)">
+                    <el-button link @click="handleCommend"><span class="iconfont icon-31pinglun"></span></el-button>
+                    <span class="number">{{ question.comment }}</span>
+                </div>
+                <div>
+                    <el-button link @click="handleCollect(question)"><span class="iconfont icon-shoucang"
+                            :class="{ 'checked': question.isStared }"></span></el-button>
+                    <span class="number">{{ question.star }}</span>
+                </div>
+            </div>
         </div>
-        <div class="content" @click="toDetail(question)">
-            <div v-if="question.coverurl">
-                <img :src=question.coverurl alt="封面" style="width: 90px; height: 90px; margin-right: 10px;">
-            </div>
-            <el-text line-clamp="3">
-                {{ noMkContent(question.content) }}
-            </el-text>
-        </div>
-        <div class="optitions">
-            <div>
-                <el-button link @click="handleLike(question)"><span class="iconfont icon-icon"
-                        :class="{ 'checked': question.isLiked }"></span></el-button>
-                <span class="number">{{ question.likeNum }}</span>
-            </div>
-            <div @click="toComment(question.id, question.uid)">
-                <el-button link @click="handleCommend"><span class="iconfont icon-31pinglun"></span></el-button>
-                <span class="number">{{ question.comment }}</span>
-            </div>
-            <div>
-                <el-button link @click="handleCollect(question)"><span class="iconfont icon-shoucang"
-                        :class="{ 'checked': question.isStared }"></span></el-button>
-                <span class="number">{{ question.star }}</span>
-            </div>
-        </div>
-    </div>
 
 
-    <!-- 遍历问题列表渲染 -->
-    <div v-for="question in filteredQuestions" :key="question.id" class="questionCard">
-        <el-button class="title" link @click="toDetail(question)">{{ question.title }}</el-button>
-        <div class="top" @click="setTop(question)" v-if="tab != '我的问题' && tab != '草稿箱'">
-            <el-icon>
-                <StarFilled />
-            </el-icon>
-        </div>
-        <div class="top" @click="deleteQuestion(question)" v-if="tab == '我的问题' || tab == '草稿箱'">
-            <el-icon>
-                <Delete />
-            </el-icon>
-        </div>
-        <div class="content" @click="toDetail(question)">
-            <div v-if="question.coverurl">
-                <img :src=question.coverurl alt="封面" style="width: 90px; height: 90px; margin-right: 10px;">
+        <!-- 遍历问题列表渲染 -->
+        <div v-for="question in filteredQuestions" :key="question.id" class="questionCard">
+            <el-button class="title" link @click="toDetail(question)">{{ question.title }}</el-button>
+            <div class="top" @click="setTop(question)" v-if="tab != '我的问题' && tab != '草稿箱' && tab != '我的收藏'">
+                <el-icon>
+                    <StarFilled />
+                </el-icon>
             </div>
-            <el-text line-clamp="3" style="align-self: self-end;">
-                {{ noMkContent(question.content) }}
-            </el-text>
+            <div class="top" @click="deleteQuestion(question)" v-if="tab == '我的问题' || tab == '草稿箱'">
+                <el-icon>
+                    <Delete />
+                </el-icon>
+            </div>
+            <div class="content" @click="toDetail(question)">
+                <div v-if="question.coverurl">
+                    <img :src=question.coverurl alt="封面" style="width: 90px; height: 90px; margin-right: 10px;">
+                </div>
+                <el-text line-clamp="3" style="align-self: self-end;">
+                    {{ noMkContent(question.content) }}
+                </el-text>
+            </div>
+            <div class="options">
+                <div>
+                    <el-button link @click="handleLike(question)"><span class="iconfont icon-icon"
+                            :class="{ 'checked': question.isLiked }"></span></el-button>
+                    <span class="number">{{ question.likeNum }}</span>
+                </div>
+                <div @click="toComment(question)">
+                    <el-button link @click="handleCommend"><span class="iconfont icon-31pinglun"></span></el-button>
+                    <span class="number">{{ question.comment }}</span>
+                </div>
+                <div>
+                    <el-button link @click="handleCollect(question)"><span class="iconfont icon-shoucang"
+                            :class="{ 'checked': question.isStared }"></span></el-button>
+                    <span class="number">{{ question.star }}</span>
+                </div>
+            </div>
         </div>
-        <div class="optitions">
-            <div>
-                <el-button link @click="handleLike(question)"><span class="iconfont icon-icon"
-                        :class="{ 'checked': question.isLiked }"></span></el-button>
-                <span class="number">{{ question.likeNum }}</span>
-            </div>
-            <div @click="toComment(question.id, question.uid)">
-                <el-button link @click="handleCommend"><span class="iconfont icon-31pinglun"></span></el-button>
-                <span class="number">{{ question.comment }}</span>
-            </div>
-            <div>
-                <el-button link @click="handleCollect(question)"><span class="iconfont icon-shoucang"
-                        :class="{ 'checked': question.isStared }"></span></el-button>
-                <span class="number">{{ question.star }}</span>
-            </div>
+        <div class="loadMore" ref="loadMoni">
+            <el-button @click="load" link :disabled="!hasMore">{{ loadText }}</el-button>
         </div>
-    </div>
-    <div class="loadMore" ref="loadMoni">
-        <el-button @click="load" link :disabled="!hasMore">{{ loadText }}</el-button>
     </div>
 </template>
 
@@ -457,7 +527,7 @@ a {
     margin-left: 2%;
 }
 
-.optitions {
+.options {
     display: flex;
     justify-content: space-between;
 }
@@ -479,6 +549,7 @@ a {
 
 .number {
     font-size: 15px;
+    padding-top: 2px;
 }
 
 .icon-shoucang {

@@ -32,7 +32,7 @@ const handleWriteThink = () => {
 
 // 点击开始创作的逻辑
 const handleStartCreate = () => {
-    console.log('开始创作');
+    router.push('/writeArticlePage');
 }
 
 </script>

@@ -19,7 +19,7 @@ onUnmounted (() => {
     localStorage.removeItem('questionDraft')
 })
 
-const loadDraft = () => {
+const loadDraft = () => {5
 
 }
 const imgAdd = (pos: number, file: File) => {

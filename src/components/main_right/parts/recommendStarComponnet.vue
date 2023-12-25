@@ -1,171 +1,127 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { ElNotification } from 'element-plus'
 // 总用户数
-const totalUser = ref(20);
+const totalUser = ref(5);
 // 当前页
 const currentPage = ref(1);
 // 每页显示的条数
 const pageSize = ref(4);
 // 改变页码
 const changePage = (val: number) => {
+    currentPage.value = val;
+    // alert(val)
     recommendUser.value = receieveRecommendUser.value.slice((val - 1) * pageSize.value, val * pageSize.value);
 }
 
 // 推荐的用户
 class RecommendUser {
     name: string;
-    followedNum: number;
+    answerNum: number;
     touXiang: string;
-    constructor(name: string, followedNum: number, touXiang: string) {
+    isFollowed: boolean;
+    constructor(name: string, answerNum: number, touXiang: string, isFollowed: boolean) {
         this.name = name;
-        this.followedNum = followedNum;
+        this.answerNum = answerNum;
         this.touXiang = touXiang;
+        this.isFollowed = isFollowed;
     }
 }
 
 const receieveRecommendUser = ref<RecommendUser[]>([]);
 
 // 先给一个初始值不然会报错
-const recommendUser = ref<RecommendUser[]>([{
-    name: '小猪佩奇',
-    followedNum: 100,
-    touXiang: 'touXiang01.png'
-}, {
-    name: '小猪佩奇',
-    followedNum: 100,
-    touXiang: 'touXiang01.png'
-}, {
-    name: '小猪佩奇',
-    followedNum: 100,
-    touXiang: 'touXiang01.png'
-}, {
-    name: '小猪佩奇',
-    followedNum: 100,
-    touXiang: 'touXiang01.png'
-}, {
-    name: '小猪佩奇',
-    followedNum: 100,
-    touXiang: 'touXiang01.png'
-}])
+const recommendUser = ref<RecommendUser[]>([
+    
+])
 
 onMounted(() => {
     // 发请求获取要推荐的用户
     // 向后端发送请求参数为(currentPage,pageSize)
     //... (currentPage,pageSize)
+    //先判断是否登录，如果未登录，获取的推荐用户统一未关注
+    const uid = localStorage.getItem('userId')
+    if(uid == null){
+        
+        
+    }else{
+        
+    }
+    //登录后按照实际关注情况获取
     receieveRecommendUser.value = [
         {
-            name: '小猪佩奇',
-            followedNum: 100,
-            touXiang: 'touXiang01.png'
+            name: '小猪佩奇1',
+            answerNum: 100,
+            touXiang: 'touXiang01.png',
+            isFollowed: false
         },
         {
             name: '小猪佩奇2',
-            followedNum: 200,
-            touXiang: 'touXiang02.png'
+            answerNum: 100,
+            touXiang: 'touXiang02.png',
+            isFollowed: false
         },
         {
-            name: '小猪佩3',
-            followedNum: 100,
-            touXiang: 'touXiang03.png'
+            name: '小猪佩奇3',
+            answerNum: 100,
+            touXiang: 'touXiang03.png',
+            isFollowed: false
         },
         {
             name: '小猪佩奇4',
-            followedNum: 100,
-            touXiang: 'touXiang01.png'
+            answerNum: 100,
+            touXiang: 'touXiang02.png',
+            isFollowed: false
         },
         {
             name: '小猪佩奇5',
-            followedNum: 600,
-            touXiang: 'touXiang01.png'
+            answerNum: 100,
+            touXiang: 'touXiang03.png',
+            isFollowed: false
         },
         {
-            name: '小猪佩奇6',
-            followedNum: 100,
-            touXiang: 'touXiang01.png'
+            name: '小猪佩奇3',
+            answerNum: 100,
+            touXiang: 'touXiang03.png',
+            isFollowed: false
         },
         {
-            name: '小猪佩奇',
-            followedNum: 100,
-            touXiang: 'touXiang01.png'
-        },
-        {
-            name: '小猪佩奇',
-            followedNum: 100,
-            touXiang: 'touXiang02.png'
-        },
-        {
-            name: '小猪佩奇',
-            followedNum: 100,
-            touXiang: 'touXiang03.png'
-        },
-        {
-            name: '小猪佩奇',
-            followedNum: 100,
-            touXiang: 'touXiang01.png'
-        },
-        {
-            name: '小猪佩奇',
-            followedNum: 100,
-            touXiang: 'touXiang02.png'
-        },
-        {
-            name: '小猪佩奇',
-            followedNum: 100,
-            touXiang: 'touXiang03.png'
-        },
-        {
-            name: '小猪佩奇',
-            followedNum: 100,
-            touXiang: 'touXiang01.png'
-        },
-        {
-            name: '小猪佩奇',
-            followedNum: 100,
-            touXiang: 'touXiang01.png'
-        },
-        {
-            name: '小猪佩奇',
-            followedNum: 100,
-            touXiang: 'touXiang01.png'
-        },
-        {
-            name: '小猪佩奇',
-            followedNum: 100,
-            touXiang: 'touXiang02.png'
-        },
-        {
-            name: '小猪佩奇',
-            followedNum: 100,
-            touXiang: 'touXiang03.png'
-        }
-        ,
-        {
-            name: '小猪佩奇',
-            followedNum: 100,
-            touXiang: 'touXiang03.png'
-        }
-        ,
-        {
-            name: '小猪佩奇',
-            followedNum: 100,
-            touXiang: 'touXiang02.png'
-        }
-        ,
-        {
-            name: '小猪佩奇',
-            followedNum: 100,
-            touXiang: 'touXiang01.png'
+            name: '小猪佩奇4',
+            answerNum: 100,
+            touXiang: 'touXiang02.png',
+            isFollowed: false
         }
     ]
     recommendUser.value = receieveRecommendUser.value.slice(0, 4);
-    totalUser.value = 20;
+    totalUser.value = 7;
 })
 
-
-const handleFollow = () => {
+const pleaseLogin = () => {
+    ElNotification({
+        title: '提示',
+        message: '请先登录',
+        type: 'warning',
+        offset: 50
+    })
+}
+const handleFollow = (uesr: any) => {
     // 向后端发送请求，参数为当前用户和被关注的用户
     //... (currentUser, followedUser)
+    const uid = localStorage.getItem('userId')
+    if(uid == null){
+        pleaseLogin();
+        return;
+    }
     console.log("关注");
+}
+//取消关注
+const handleUnFollow = (uesr: any) =>{
+    const uid = localStorage.getItem('userId')
+    if(uid == null){
+        pleaseLogin();
+        return;
+    }
+    console.log("取消关注");
 }
 
 const handleToPersonalPage = () => {
@@ -175,7 +131,6 @@ const handleToPersonalPage = () => {
 
 // 获取图片的url
 const getImageUrl = (name: string) => {
-    console.log(name)
     return new URL(`../../../assets/img/${name}`, import.meta.url).href;
 }
 
@@ -186,33 +141,35 @@ const getImageUrl = (name: string) => {
     <el-card class="box-card">
         <template #header>
             <div class="card-header">
-                <div style="display: flex; align-items:normal;">
+                <div style="display: flex; align-items: center;">
                     <el-icon>
                         <User />
                     </el-icon>
-                    <span style="margin-left: 7px;">推荐关注</span>
+                    <span style="margin-left: 7px;">优质博主</span>
                 </div>
             </div>
 
         </template>
         <!-- 推荐列表 -->
-        <div class="recommendUser" v-for="i in 4">
+        <div class="recommendUser" v-for="item in recommendUser">
             <div style="display: flex; align-items: center;">
-                <el-avatar size="large" :src="getImageUrl(recommendUser[i - 1].touXiang)" style="margin-right: 10px;"
+                <el-avatar size="large" :src="getImageUrl(item.touXiang)" style="margin-right: 10px;"
                     @click="handleToPersonalPage"></el-avatar>
                 <div>
-                    <div style="font-size: 16px; font-weight: bold;" @click="handleToPersonalPage">{{ recommendUser[i -
-                        1].name }}</div>
-                    <div style="font-size: 12px; color: #999;" @click="handleToPersonalPage">被{{ recommendUser[i -
-                        1].followedNum }}人关注</div>
+                    <div style="font-size: 16px; font-weight: bold;" @click="handleToPersonalPage">
+                    {{ item.name }}</div>
+                    <div style="font-size: 12px; color: #999;" @click="handleToPersonalPage">
+                        已回答{{ item.answerNum }}个问题</div>
                 </div>
             </div>
-            <el-button class="start-btn" type="primary" @click="handleFollow">关注</el-button>
+            <el-button class="start-btn" type="primary" @click="handleFollow(item)" v-if="!item.isFollowed">+ 关注</el-button>
+            <el-button class="start-btn" type="primary" @click="handleUnFollow(item)" v-if="item.isFollowed">已关注</el-button>
         </div>
         <!-- 分页 -->
         <div class="example-pagination-block">
-            <el-pagination layout="prev, pager, next" :total="totalUser" @current-change="changePage"
-                v-model:page-size="pageSize" v-model:current-page="currentPage" />
+            <el-pagination layout="prev, pager, next" :total="totalUser" @update:current-page="changePage"
+                :page-size="pageSize" :current-page="currentPage"/>
+                <!-- <el-pagination layout="prev, pager, next" :total="50" :current-page="currentPage"/> -->
         </div>
 
     </el-card>

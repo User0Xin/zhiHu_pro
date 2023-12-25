@@ -72,6 +72,8 @@ const hasNew = ref(false);
                     <el-badge :is-dot="hasNew" class="item">最新发布</el-badge>
                 </template>
             </el-tab-pane>
+            <el-tab-pane label="我的收藏" name="我的收藏">
+            </el-tab-pane>
             <el-tab-pane label="我的问题" name="我的问题">
             </el-tab-pane>
             <el-tab-pane label="草稿箱" name="草稿箱">
