@@ -11,15 +11,32 @@ import router from '@/router';
 const articleContent = ref('');
 const questionDraft = ref(localStorage.getItem('questionDraft') ? JSON.parse(localStorage.getItem('questionDraft')!) : null);
 
-onMounted ( () =>{
+onMounted(() => {
     loadDraft()
 })
 
-onUnmounted (() => {
+onUnmounted(() => {
     localStorage.removeItem('questionDraft')
 })
 
-const loadDraft = () => {5
+const draftId = ref(-1);
+
+const loadDraft = () => {
+    console.log(questionDraft.value)
+    if (questionDraft.value) { //如果不为空说明是从草稿箱跳转过来
+        draftId.value = questionDraft.value.id;//设置一下草稿id
+        ruleForm.title = questionDraft.value.title;
+        ruleForm.content = questionDraft.value.content;
+        ruleForm.coverurl = questionDraft.value.coverurl;
+        ruleForm.videourl = questionDraft.value.videourl;
+        imageUrl.value = questionDraft.value.coverurl;
+        if (ruleForm.videourl != '') {
+            fileList.value.push({
+                name: questionDraft.value.videourl,
+                url: questionDraft.value.videourl
+            })
+        }
+    }
 
 }
 const imgAdd = (pos: number, file: File) => {
@@ -72,7 +89,7 @@ const submitForm = async (formEl: FormInstance | undefined, ruleForm: RuleForm) 
     if (!formEl) return
     await formEl.validate((valid, fields) => {
         if (valid) {  // 表单校验通过
-            request.post('/question/addQuestion' + '/1' + '/1', ruleForm).then((res: any) => {
+            request.post('/question/addQuestion' + '/1' + '/1' + `/${draftId.value}`, ruleForm).then((res: any) => {
                 console.log(res)
                 if (res.code == 200) {
                     ElMessage.success('发布成功')
@@ -85,11 +102,12 @@ const submitForm = async (formEl: FormInstance | undefined, ruleForm: RuleForm) 
     })
 }
 
+// 存为草稿
 const storeAsDedraft = async (formEl: FormInstance | undefined, ruleForm: RuleForm) => {
     if (!formEl) return
     await formEl.validate((valid, fields) => {
         if (valid) {
-            request.post('/question/addQuestion' + '/1' + '/0', ruleForm).then((res: any) => {
+            request.post('/question/addQuestion' + '/1' + '/0/-1', ruleForm).then((res: any) => {
                 console.log(res)
                 if (res.code == 200) {
                     ElMessage.success('发布成功')
@@ -116,13 +134,13 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (
 }
 
 const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
-    if (rawFile.type !== 'image/jpeg') {   // 限制上传图片格式
-        ElMessage.error('Avatar picture must be JPG format!')
-        return false
-    } else if (rawFile.size / 1024 / 1024 > 2) {  // 限制上传图片大小
-        ElMessage.error('Avatar picture size can not exceed 2MB!')
-        return false
-    }
+    // if (rawFile.type !== 'image/jpeg') {   // 限制上传图片格式
+    //     ElMessage.error('Avatar picture must be JPG format!')
+    //     return false
+    // } else if (rawFile.size / 1024 / 1024 > 2) {  // 限制上传图片大小
+    //     ElMessage.error('Avatar picture size can not exceed 2MB!')
+    //     return false
+    // }
     return true
 }
 
