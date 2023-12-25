@@ -86,6 +86,7 @@ class commentItem {
     id: string;
     userId: number;
     username: string;
+    touXiang: string;
     content: string;
     foreignId: number;
     targetUsername: string;
@@ -95,10 +96,11 @@ class commentItem {
     isLiked: boolean;
     isTop: number;
     children: commentItem[];
-    constructor(id: string, userId: number, username: string, content: string, foreignId: number, targetUsername: string, createTime: string, likeNum: number, replyNum: number, isLiked: boolean, isTop: number, children: commentItem[]) {
+    constructor(id: string, userId: number, username: string, touXiang: string, content: string, foreignId: number, targetUsername: string, createTime: string, likeNum: number, replyNum: number, isLiked: boolean, isTop: number, children: commentItem[]) {
         this.id = id;
         this.userId = userId;
         this.username = username;
+        this.touXiang = touXiang;
         this.content = content;
         this.foreignId = foreignId;
         this.targetUsername = targetUsername;
@@ -298,20 +300,6 @@ const handleCurrentChange = (val: number, commentItem: commentItem, index: numbe
     })
 }
 
-// 格式化时间
-const handleTimeFormat = (time: string) => {
-    let timearr = Array(6).fill('');
-    for (let i = 0; i < time.length; i++) {
-        if (time[i].length == 1) {
-            timearr[i] = '0' + time[i];
-        } else {
-            timearr[i] = time[i];
-        }
-    }
-    const timestr = timearr[0] + '-' + timearr[1] + '-' + timearr[2] + ' ' + timearr[3] + ':' + timearr[4] + ':' + timearr[5];
-    return timestr;
-}
-
 // 点赞根评论
 const handleLikeRootComment = (commentItem: commentItem) => {
     request.post('/comment/likeRoot' + `/${commentItem.isLiked ? -1 : 1}` + `/${commentItem.id}/${localStorage.getItem('userId')}/${commentItem.userId}`).then(res => {
@@ -417,15 +405,14 @@ onBeforeUnmount(() => {
                             <div class="commentItem">
                                 <div v-if="commentItem.isTop == 1" class="topTag">置顶</div>
                                 <div class="itemHead">
-                                    <img src='../../assets/img/touXiang03.png' />
+                                    <img :src='commentItem.touXiang' />
                                     <div>{{ commentItem.username }}</div>
                                 </div>
                                 <div class="item-content">
                                     <span>{{ commentItem.content }}</span>
                                 </div>
                                 <div class="item-foot-bar">
-                                    <span style="margin-left: 2%; margin-right: 2%;">{{
-                                        handleTimeFormat(commentItem.createTime) }}</span>
+                                    <span style="margin-left: 2%; margin-right: 2%;">{{ commentItem.createTime }}</span>
                                     <el-button link @click="handleLikeRootComment(commentItem)">
                                         <span class="iconfont icon-icon" :class="{ 'already': commentItem.isLiked }"
                                             style="position: static;"></span>
@@ -455,7 +442,7 @@ onBeforeUnmount(() => {
                                     <div v-for="(replyItem) in commentList[index].children">
                                         <div class="replyItem">
                                             <div class="itemHead">
-                                                <img src='../../assets/img/touXiang03.png' />
+                                                <img :src='replyItem.touXiang' />
                                                 <div>{{ replyItem.username }}</div>
                                                 <div style="margin-left: 1%;">回复</div>
                                                 <div>{{ replyItem.targetUsername }}</div>
@@ -464,8 +451,8 @@ onBeforeUnmount(() => {
                                                 <span>{{ replyItem.content }}</span>
                                             </div>
                                             <div class="item-foot-bar">
-                                                <span style="margin-left: 2%; margin-right: 2%;">{{
-                                                    handleTimeFormat(replyItem.createTime) }}</span>
+                                                <span style="margin-left: 2%; margin-right: 2%;">{{ replyItem.createTime
+                                                }}</span>
                                                 <el-button link @click="handleLikeReplyComment(commentItem, replyItem)">
                                                     <span class="iconfont icon-icon"
                                                         :class="{ 'already': replyItem.isLiked }"
@@ -574,9 +561,10 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.contain{
+.contain {
     height: 92vh;
 }
+
 .body {
     width: 63%;
     margin: 0 auto;
@@ -598,8 +586,7 @@ onBeforeUnmount(() => {
     height: 500px;
     background-color: #fff;
     position: fixed;
-    right: 284px;
-    top: 55px;
+    right: 21%;
     border-radius: 15px;
     padding-top: 10px;
     box-shadow: 0 8px 15px rgba(100, 100, 100, 0.5);
