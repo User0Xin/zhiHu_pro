@@ -3,12 +3,15 @@ import questionList from './questionList.vue';
 import { onMounted, ref, watch } from 'vue'
 import { useQuestionStore } from '@/stores/questionStore';
 import router from '@/router';
+import reques from '@/utils/request';
 const questionStore = useQuestionStore()
-
+const loadText = ref('加载更多')
+const hasMore = ref(true)
 onMounted(() => {
   console.log(questionStore.searchKey)
-  
+  // reques.get(`/question/searchQuestionByPage`)
 })
+
 
 class question {
   id: number;
