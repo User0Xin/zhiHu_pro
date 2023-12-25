@@ -293,8 +293,9 @@ const toDetail = (question: question) => {
         router.push('/detailPage/' + question.uid + '/' + question.id)
     }
 }
-const toComment = (id: number, uid: number) => {
-    router.push({ path: '/detailPage/' + uid + '/' + id, query: { to: 'comment' } })
+const toComment = (question: question) => {
+    localStorage.setItem('questionDetail', JSON.stringify(question));
+    router.push({ path: '/detailPage/' + question.uid + '/' + question.id, query: { to: 'comment' } })
 }
 //设置置顶
 const topQuestion = ref<question[]>(localStorage.getItem('topQuestion') ? JSON.parse(localStorage.getItem('topQuestion')!) : [])
@@ -388,13 +389,13 @@ const toWritePage = (question: question) => {
                     {{ noMkContent(question.content) }}
                 </el-text>
             </div>
-            <div class="optitions">
+            <div class="options">
                 <div>
                     <el-button link @click="handleLike(question)"><span class="iconfont icon-icon"
                             :class="{ 'checked': question.isLiked }"></span></el-button>
                     <span class="number">{{ question.likeNum }}</span>
                 </div>
-                <div @click="toComment(question.id, question.uid)">
+                <div @click="toComment(question)">
                     <el-button link @click="handleCommend"><span class="iconfont icon-31pinglun"></span></el-button>
                     <span class="number">{{ question.comment }}</span>
                 </div>
@@ -428,13 +429,13 @@ const toWritePage = (question: question) => {
                     {{ noMkContent(question.content) }}
                 </el-text>
             </div>
-            <div class="optitions">
+            <div class="options">
                 <div>
                     <el-button link @click="handleLike(question)"><span class="iconfont icon-icon"
                             :class="{ 'checked': question.isLiked }"></span></el-button>
                     <span class="number">{{ question.likeNum }}</span>
                 </div>
-                <div @click="toComment(question.id, question.uid)">
+                <div @click="toComment(question)">
                     <el-button link @click="handleCommend"><span class="iconfont icon-31pinglun"></span></el-button>
                     <span class="number">{{ question.comment }}</span>
                 </div>
@@ -526,7 +527,7 @@ a {
     margin-left: 2%;
 }
 
-.optitions {
+.options {
     display: flex;
     justify-content: space-between;
 }
@@ -548,6 +549,7 @@ a {
 
 .number {
     font-size: 15px;
+    padding-top: 2px;
 }
 
 .icon-shoucang {
