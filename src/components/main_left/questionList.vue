@@ -67,7 +67,7 @@ watch(tab, (newValue: string) => {
         }
     }
     setTimeout(() => {
-        if(questions.value.length == 0) load();
+        if  (questions.value.length == 0) load();
     }, 300);
 });
 
@@ -218,20 +218,23 @@ onBeforeUnmount(() => {
 });
 
 const toDetail = (question: question) => {
-    localStorage.setItem('questionDetail', JSON.stringify(question));
-    const lastQuestionTime = localStorage.getItem('lastQuestion');
-    const arr = question.time;
-    const date = new Date(arr[0], arr[1] - 1, arr[2], arr[3], arr[4], arr[5]);
-    if (lastQuestionTime == null) {
-        localStorage.setItem('lastQuestion', date.toString());
-    }
-    else {
-        const lastTime = new Date(lastQuestionTime);
-        if (date > lastTime) {
+    if  (tab.value == '草稿箱') toWritePage(question);
+    else  {
+        localStorage.setItem('questionDetail', JSON.stringify(question));
+        const lastQuestionTime = localStorage.getItem('lastQuestion');
+        const arr = question.time;
+        const date = new Date(arr[0], arr[1] - 1, arr[2], arr[3], arr[4], arr[5]);
+        if (lastQuestionTime == null) {
             localStorage.setItem('lastQuestion', date.toString());
         }
+        else {
+            const lastTime = new Date(lastQuestionTime);
+            if (date > lastTime) {
+                localStorage.setItem('lastQuestion', date.toString());
+            }
+        }
+        router.push('/detailPage/' + question.uid + '/' + question.id)
     }
-    router.push('/detailPage/' + question.uid + '/' + question.id)
 }
 const toComment = (id: number, uid: number) => {
     router.push({ path: '/detailPage/' + uid + '/' + id, query: { to: 'comment' } })
@@ -289,6 +292,11 @@ const noMkContent = (content: string) => {
 const deleteQuestion = (question: question) => {
 
     alert("删除问题")
+}
+
+const toWritePage = (question: question) =>  {
+    localStorage.setItem("questionDraft", JSON.stringify(question));
+    router.push("/writeArticlePage");
 }
 
 </script>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { type Ref } from 'vue';
 import type { ElCarousel, FormInstance, FormRules } from 'element-plus'
 import type { UploadProps, UploadUserFile } from 'element-plus'
@@ -9,6 +9,19 @@ import draggable from 'vuedraggable';
 import request from '@/utils/request'
 import router from '@/router';
 const articleContent = ref('');
+const questionDraft = ref(localStorage.getItem('questionDraft') ? JSON.parse(localStorage.getItem('questionDraft')!) : null);
+
+onMounted ( () =>{
+    loadDraft()
+})
+
+onUnmounted (() => {
+    localStorage.removeItem('questionDraft')
+})
+
+const loadDraft = () => {
+
+}
 const imgAdd = (pos: number, file: File) => {
     console.log(pos, file);
 }
