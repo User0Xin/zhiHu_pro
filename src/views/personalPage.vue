@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import createComponent from '@/components/main_right/parts/createComponent.vue';
 import webInfo from '@/components/main_right/parts/webInfo.vue'
+import type { TabsPaneContext } from 'element-plus'
 // 个人信息
 class Person {
     name: string;
@@ -50,6 +51,14 @@ const handleClickFollowed = () => {
 const handleEditPersonalInfo = () => {
     console.log('编辑个人资料');
 }
+// 当前选中的tab
+const activeName = ref('个人信息')
+
+// 点击tab的回调
+const handleClick = (tab: TabsPaneContext, event: Event) => {
+    console.log(tab, event);
+
+}
 </script>
 
 <template>
@@ -84,34 +93,47 @@ const handleEditPersonalInfo = () => {
         </el-card>
         <div class="bottom-box">
             <div class="left-box">
-                <el-card class="personal-info-card">
-                    <template #header>
-                        <div class="card-header">
-                            <span style="font-size: 16px; font-weight: 600;">个人信息</span>
-                        </div>
-                    </template>
-                    <div class="personal-info-box">
-                        <div class="info-box-userName">
-                            <span class="label">用户名：</span><span>{{ person.name }}</span>
-                        </div>
-                        <div class="info-box-sex">
-                            <span class="label">性别：</span><span>{{ person.sex }}</span>
-                        </div>
-                        <div class="info-box-age">
-                            <span class="label">年龄：</span><span>{{ person.age }}</span>
-                        </div>
-                        <div class="info-box-birthday">
-                            <span class="label">生日：</span><span>{{ person.birthday }}</span>
-                        </div>
-                        <div class="info-box-job">
-                            <span class="label">工作：</span><span>{{ person.job }}</span>
-                        </div>
-                        <div class="info-box-description">
-                            <span class="label">个人简介：</span><span>{{ person.description }}</span>
-                        </div>
-                    </div>
+                <el-card>
+                    <el-tabs v-model="activeName" @tab-click="handleClick">
+                        <el-tab-pane label="个人信息" name="个人信息">
+                            <el-card class="personal-info-card">
+                                <template #header>
+                                    <div class="card-header">
+                                        <span style="font-size: 16px; font-weight: 600;">个人信息</span>
+                                    </div>
+                                </template>
+                                <div class="personal-info-box">
+                                    <div class="info-box-userName">
+                                        <span class="label">用户名：</span><span>{{ person.name }}</span>
+                                    </div>
+                                    <div class="info-box-sex">
+                                        <span class="label">性别：</span><span>{{ person.sex }}</span>
+                                    </div>
+                                    <div class="info-box-age">
+                                        <span class="label">年龄：</span><span>{{ person.age }}</span>
+                                    </div>
+                                    <div class="info-box-birthday">
+                                        <span class="label">生日：</span><span>{{ person.birthday }}</span>
+                                    </div>
+                                    <div class="info-box-job">
+                                        <span class="label">工作：</span><span>{{ person.job }}</span>
+                                    </div>
+                                    <div class="info-box-description">
+                                        <span class="label">个人简介：</span><span>{{ person.description }}</span>
+                                    </div>
+                                </div>
 
+                            </el-card>
+                        </el-tab-pane>
+                        <el-tab-pane label="我的问题" name="我的问题">
+                            我的问题
+                        </el-tab-pane>
+                        <el-tab-pane label="我的关注" name="我的关注">
+                            我的关注
+                        </el-tab-pane>
+                    </el-tabs>
                 </el-card>
+
             </div>
             <div class="right-box">
                 <createComponent></createComponent>
@@ -237,8 +259,6 @@ const handleEditPersonalInfo = () => {
 /* 底部-左侧盒子 */
 .bottom-box .left-box {
     width: 70%;
-
-
 }
 
 /* 底部-右侧盒子 */
