@@ -99,9 +99,6 @@ const buttonIndex = ref(1);
                 <span>京公网安备11000002000001号</span>
                 <span>京网文[2023]2674-081号</span>
             </div>
-
-
-
         </div>
     </div>
 </template>
@@ -153,7 +150,7 @@ const buttonIndex = ref(1);
 .footer {
     position: absolute;
     min-height: 35px;
-    bottom: 8%;
+    bottom: 9%;
     width: 100%;
     color: #8590a6;
     font-size: 14px;
