@@ -137,26 +137,55 @@ const changeActiveBox = (index: number, authorId: number) => {
     }
 }
 const hasNew = ref((author: author) => {
-    const lastUpdateTime = localStorage.getItem('lastUpdateTimeAuthor' + author.id);
-    if (lastUpdateTime == null) {
-        return true;
-    } else {
-        const lastTime = new Date(lastUpdateTime);
-        const date = new Date(author.updateTime[0], author.updateTime[1] - 1, author.updateTime[2], author.updateTime[3], author.updateTime[4], author.updateTime[5]);
-        if (date > lastTime) {
+    const key = author.id + '-lastVisitTime';
+    const lastVisitTime = localStorage.getItem(key);//拿到上一次访问这个作者的文章时间
+    if(lastVisitTime == null){//本地无访问该作者的最近时间
+        if(author.updateTime != null)
+            return true;//当作者有最近问题发布时间且本地无访问该作者记录
+        else if(author.updateTime == null)
+            return false;//当作者无最近问题发布时间
+    }else if(lastVisitTime != null){
+        const lastVisitDate = new Date(lastVisitTime);
+        const currentUpdateTime = new Date(author.updateTime[0], author.updateTime[1] - 1, author.updateTime[2], author.updateTime[3], author.updateTime[4], author.updateTime[5]);
+        if(currentUpdateTime > lastVisitDate){
             return true;
-        } else {
+        }
+        else{
             return false;
         }
     }
+
+    // if (lastUpdateTime == null) {
+    //     return true;
+    // } else {
+    //     const lastTime = new Date(lastUpdateTime);
+    //     const date = new Date(author.updateTime[0], author.updateTime[1] - 1, author.updateTime[2], author.updateTime[3], author.updateTime[4], author.updateTime[5]);
+    //     if (date > lastTime) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
     //判断作者是否有更新
 })
 
 const toDetail = (question: question) => {
+    const key = question.author.id + '-lastVisitTime';
+    const lastVisitTime = localStorage.getItem(key);
+    const arr = question.time;
+    
     localStorage.setItem('questionDetail', JSON.stringify(question));
     const lastQuestionTime = localStorage.getItem('lastQuestion');
-    const arr = question.time;
     const date = new Date(arr[0], arr[1] - 1, arr[2], arr[3], arr[4], arr[5]);
+    if(lastVisitTime == null){
+        localStorage.setItem(key,date.toString());//在没访问过该作者文章时，设置本地最近访问时间
+    }
+    else{
+        const lastTime = new Date(lastVisitTime);
+        if(date > lastTime){
+            localStorage.setItem(key,date.toString());//在当前文章的更新时间晚于上一次访问时间时更新
+        }
+    }
     if (lastQuestionTime == null) {
         localStorage.setItem('lastQuestion', date.toString());
     }
