@@ -135,7 +135,7 @@ const getLocalUser = () => {
 <!--            <div class="title" @click="backToMain">百度产品论坛</div>-->
         </div>
         <div class="searchInput">
-            <el-input v-model="input" placeholder="搜索你感兴趣的内容。。" class="input-with-select" @keyup.enter="search">
+            <el-input v-model="input" placeholder="搜索你感兴趣的内容" class="input-with-select" @keyup.enter="search">
                 <template #append>
                     <el-button class="searchButton" @click="search" style="background-color: #409eff;">
                         <el-icon size="16px" color="#fff">
