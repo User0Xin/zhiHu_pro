@@ -105,20 +105,21 @@ const handleSubmmit = () => {
             // 更新个人信息
             request.get('/user/getUserInfo' + `/${localStorage.getItem('userId')}`).then(res => {
                 person.value = res.data;
+                //更新localStorage
+                const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null;
+                user.name = person.value.name;
+                localStorage.setItem('user', JSON.stringify(user));
+                // 更新pinia
+                loginStore.setUserName(person.value.name);
+                loginStore.setTouXiang(person.value.touXiang);
+                ElNotification({
+                    title: '提示',
+                    message: '修改成功',
+                    type: 'success',
+                    offset: 50
+                })
             })
-            //更新localStorage
-            const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null;
-            user.name = person.value.name;
-            localStorage.setItem('user', JSON.stringify(user));
-            // 更新pinia
-            loginStore.setUserName(person.value.name);
-            loginStore.setTouXiang(person.value.touXiang);
-            ElNotification({
-                title: '提示',
-                message: '修改成功',
-                type: 'success',
-                offset: 50
-            })
+
         }
     })
     dialogFormVisible.value = false;
@@ -146,19 +147,20 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (
             // 更新个人信息
             request.get('/user/getUserInfo' + `/${localStorage.getItem('userId')}`).then(res => {
                 person.value = res.data;
+                //更新localStorage
+                const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null;
+                user.touXiang = touXiangForm.value.touXiang;
+                localStorage.setItem('user', JSON.stringify(user));
+                // 更新pinia
+                loginStore.setTouXiang(touXiangForm.value.touXiang);
+                ElNotification({
+                    title: '提示',
+                    message: '修改成功',
+                    type: 'success',
+                    offset: 50
+                })
             })
-            //更新localStorage
-            const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null;
-            user.touXiang = touXiangForm.value.touXiang;
-            localStorage.setItem('user', JSON.stringify(user));
-            // 更新pinia
-            loginStore.setTouXiang(touXiangForm.value.touXiang);
-            ElNotification({
-                title: '提示',
-                message: '修改成功',
-                type: 'success',
-                offset: 50
-            })
+
         }
     })
 
@@ -233,9 +235,6 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (
                                 </div>
 
                             </el-card>
-                        </el-tab-pane>
-                        <el-tab-pane label="我的问题" name="我的问题">
-                            我的问题
                         </el-tab-pane>
                         <el-tab-pane label="我的关注" name="我的关注">
                             我的关注

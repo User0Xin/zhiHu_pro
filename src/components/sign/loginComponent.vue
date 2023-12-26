@@ -7,6 +7,12 @@ import router from '@/router';
 const loginStore = useLoginStore();
 const hidedialogForm = inject('hidedialogForm') as any;
 import { ElMessage } from 'element-plus';
+import { Md5 } from 'ts-md5';
+import { ru } from 'element-plus/lib/locale/index.js';
+
+
+// 定义MD5对象
+const md5: any = new Md5()
 
 // 登录表单
 interface RuleForm {
@@ -35,18 +41,51 @@ const rules = reactive<FormRules<RuleForm>>({
   ],
 })
 
-
+//错误次数，达到十次冻结账号一分钟
+const errNum = ref(0);
 
 //提交表单(登录)
 const submitForm = async (formEl: FormInstance | undefined, ruleForm: RuleForm) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-      console.log(ruleForm)
-      // 发送请求，后端返回token，把token放到localstorage中，后面每次请求带上token
+      // 判断账号是否被冻结
+      const Frozen = localStorage.getItem('Frozen') ? JSON.parse(localStorage.getItem('Frozen') as string) as string[] : null;
+      if (Frozen && Frozen.includes(ruleForm.account)) {
+        ElMessage.error("账号已被冻结一分钟");
+        return;
+      }
+      //没被冻结，发送请求
+      //发送请求，后端返回token，把token放到localstorage中，后面每次请求带上token
+      //使用md5对密码进行加密
+      md5.appendStr(ruleForm.password);
+      ruleForm.password = md5.end().toString();
       request.post('/admin/login', ruleForm).then(res => {
         if (res.code == 505) {
+          ruleForm.password = '';
           ElMessage.error(res.msg);
+          errNum.value++;
+          // 如果错误次数达到十次，冻结账号一分钟
+          if (errNum.value == 10) {
+            ElMessage.error("您已连续十次输入错误密码，账号已被冻结一分钟");
+            // 在localstorage中存储冻结的账号
+            const Frozen = localStorage.getItem('Frozen') ? JSON.parse(localStorage.getItem('Frozen') as string) as string[] : null;
+            if (Frozen) {
+              Frozen.push(ruleForm.account);
+              localStorage.setItem('Frozen', JSON.stringify(Frozen));
+            } else {
+              localStorage.setItem('Frozen', JSON.stringify([ruleForm.account]));
+            }
+            setTimeout(() => {
+              errNum.value = 0;
+              const Frozen = localStorage.getItem('Frozen') ? JSON.parse(localStorage.getItem('Frozen') as string) as string[] : null;
+              if (Frozen) {
+                // 冻结一分钟后，删除冻结的账号
+                Frozen.splice(Frozen.indexOf(ruleForm.account), 1);
+                localStorage.setItem('Frozen', JSON.stringify(Frozen));
+              }
+            }, 60000);
+          }
         } else {
           if (ruleForm.type.includes('记住账号')) {
             const RememberAccount = localStorage.getItem("RememberAccount") ? JSON.parse(localStorage.getItem("RememberAccount") as string) as string[] : null;
