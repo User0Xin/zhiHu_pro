@@ -1,10 +1,10 @@
 import axios from 'axios'
 import router from "@/router";
 
+
 const request = axios.create({
     // baseURL: `http://${serverIp}:8081`,
-    baseURL: 'http://47.115.215.179:8081',
-    // baseURL: 'http://47.115.215.179:8081',
+    baseURL: 'http://localhost:8081',
     timeout: 30000
 })
 

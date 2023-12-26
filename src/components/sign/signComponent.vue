@@ -210,7 +210,7 @@ const submitEmailForm = async (formEl: FormInstance | undefined, emailRuleForm: 
                 }
             })
             totalForm.value.userName = emailRuleForm.userName;
-            totalForm.value.email = emailRuleForm.email;
+            totalForm.value.email = emailRuleForm.email + '@qq.com';
             carouselHeight.value = '180px';
             carousel.value?.next()
             activeStep.value = activeStep.value + 1;
