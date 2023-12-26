@@ -8,6 +8,7 @@ const back = () => {
 }
 
 onMounted(() => {
+  window.addEventListener('beforeunload', handleBeforeUnload);
   // 自动登录
   if (localStorage.getItem('AutoLogin') == 'true') {
     loginStore.Login();
@@ -15,15 +16,19 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  window.removeEventListener('beforeunload', handleBeforeUnload);
+})
+
+const handleBeforeUnload = () => {
   // 如果没有设置自动登录，则要清空登录状态
-  if (localStorage.getItem('AutoLogin') == 'false' || localStorage.getItem('AutoLogin') == null) {
+  if (localStorage.getItem('AutoLogin') == 'false') {
     loginStore.Logout();
+    console.log("退出")
     localStorage.removeItem('user');
     localStorage.removeItem('userId');
     localStorage.removeItem('token');
   }
-})
-
+}
 </script>
 
 <template>

@@ -131,8 +131,8 @@ const getLocalUser = () => {
 <template>
     <div class="topBar">
         <div class="logo">
-            <img @click="backToMain" src="../../statistics/404.png" alt="logo">
-            <div class="title" @click="backToMain">百度产品论坛</div>
+            <img @click="backToMain" src="../../assets/img/logo1.png" alt="logo">
+<!--            <div class="title" @click="backToMain">百度产品论坛</div>-->
         </div>
         <div class="searchInput">
             <el-input v-model="input" placeholder="搜索你感兴趣的内容。。" class="input-with-select" @keyup.enter="search">
@@ -146,7 +146,8 @@ const getLocalUser = () => {
             </el-input>
         </div>
         <div style="display: flex; justify-content: center; align-items: center;">
-            <div class="UserName" v-if="loginStore.isLogin">{{ getLocalUser().name }}</div>
+            <div class="UserName" v-if="loginStore.isLogin">{{
+                loginStore.userName != '' ? loginStore.userName : getLocalUser().name }}</div>
             <el-button link v-if="!loginStore.isLogin" @click="handleLogin">请登录</el-button>
             <div class="touXiang" style="margin-left: 10px;">
                 <!-- 未登录 -->
@@ -156,7 +157,8 @@ const getLocalUser = () => {
                 <!-- 已登录 -->
                 <el-dropdown trigger="click" v-if="loginStore.isLogin">
                     <span class="el-dropdown-link">
-                        <el-avatar :size="40" :src="getLocalUser().touXiang" />
+                        <el-avatar :size="40"
+                            :src="loginStore.touXiang != '' ? loginStore.touXiang : getLocalUser().touXiang" />
                     </span>
                     <template #dropdown>
                         <el-dropdown-menu>
@@ -229,13 +231,14 @@ const getLocalUser = () => {
 }
 
 .logo {
+
     display: flex;
     align-items: center;
 }
 
 img {
-    width: 90px;
-    height: 90px;
+    width: 185px;
+    height: 50px;
     justify-items: center;
 }
 
