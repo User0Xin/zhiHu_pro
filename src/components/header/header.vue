@@ -8,6 +8,7 @@ import { useLoginStore } from '@/stores/loginStore';
 import { useQuestionStore } from '@/stores/questionStore';
 import { ElNotification } from 'element-plus'
 const loginStore = useLoginStore()
+const questionStore = useQuestionStore()
 const input = ref('')
 const state = reactive({
     circleUrl:
@@ -95,19 +96,12 @@ const user = ref<User>(new User('小猪佩奇', 'touXiang01.png'));
 
 //搜索
 const search = () => {
-    if(localStorage.getItem('userId') == null){
+    if (localStorage.getItem('userId') == null) {
         pleaseLogin();
     }
-    else{
-        // alert("search")
-        // questionStore.setSearchKey(input.value)
-        // console.log(questionStore.searchKey)
-        // localStorage.setItem('searchKey', input.value)
-        // console.log(localStorage.getItem('searchKey'))
-        // router.push('/search');
-        // alert('搜索回车' + input.value)
-        // router.go(0);
-        router.push({ path: '/search', query: { searchKeyword: input.value } });
+    else {
+        questionStore.searchQuestion(input.value, localStorage.getItem('userId'))
+        router.push({ path: '/search' });
     }
 }
 const pleaseLogin = () => {

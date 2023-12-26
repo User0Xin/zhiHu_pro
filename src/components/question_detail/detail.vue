@@ -581,11 +581,7 @@ onBeforeUnmount(() => {
 }
 
 .author {
-<<<<<<< HEAD
     /* position: right */
-=======
-    /* position: right; */
->>>>>>> 1f243b070a428eba4871dfa71de5e6def0dcd624
     width: 20%;
     height: 500px;
     background-color: #fff;
