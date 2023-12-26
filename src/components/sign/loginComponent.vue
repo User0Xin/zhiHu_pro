@@ -2,6 +2,8 @@
 import { ref, reactive, inject } from 'vue';
 import type { FormInstance, FormRules } from 'element-plus'
 import { useLoginStore } from '@/stores/loginStore';
+import request from '@/utils/request';
+import router from '@/router';
 const loginStore = useLoginStore();
 const hidedialogForm = inject('hidedialogForm') as any;
 
@@ -32,15 +34,37 @@ const rules = reactive<FormRules<RuleForm>>({
   ],
 })
 
+
+
 //提交表单(登录)
 const submitForm = async (formEl: FormInstance | undefined, ruleForm: RuleForm) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-      console.log('submit!')
       console.log(ruleForm)
-      console.log("发送请求")
       // 发送请求，后端返回token，把token放到localstorage中，后面每次请求带上token
+      request.post('/admin/login', ruleForm).then(res => {
+        if (res.code == 505) {
+          alert(res.msg);
+        } else {
+          if (ruleForm.type.includes('记住账号')) {
+            const RememberAccount = localStorage.getItem("RememberAccount") ? JSON.parse(localStorage.getItem("RememberAccount") as string) as string[] : null;
+            if (RememberAccount) {
+              RememberAccount.push(ruleForm.account);
+              localStorage.setItem('RememberAccount', JSON.stringify(RememberAccount));
+            } else {
+              localStorage.setItem('RememberAccount', JSON.stringify([ruleForm.account]));
+            }
+          }
+          if (ruleForm.type.includes('自动登录')) {
+            localStorage.setItem('AutoLogin', 'true');
+          }
+          localStorage.setItem('user', JSON.stringify(res.data));
+          localStorage.setItem('userId', res.data.userId);
+          loginStore.Login();
+          router.push('/');
+        }
+      })
       loginStore.Login();
       hidedialogForm();
     }
