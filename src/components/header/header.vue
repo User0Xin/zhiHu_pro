@@ -131,8 +131,8 @@ const getLocalUser = () => {
 <template>
     <div class="topBar">
         <div class="logo">
-            <img @click="backToMain" src="../../statistics/404.png" alt="logo">
-            <div class="title" @click="backToMain">百度产品论坛</div>
+            <img @click="backToMain" src="../../assets/img/logo1.png" alt="logo">
+<!--            <div class="title" @click="backToMain">百度产品论坛</div>-->
         </div>
         <div class="searchInput">
             <el-input v-model="input" placeholder="搜索你感兴趣的内容。。" class="input-with-select" @keyup.enter="search">
@@ -229,13 +229,14 @@ const getLocalUser = () => {
 }
 
 .logo {
+
     display: flex;
     align-items: center;
 }
 
 img {
-    width: 90px;
-    height: 90px;
+    width: 185px;
+    height: 50px;
     justify-items: center;
 }
 

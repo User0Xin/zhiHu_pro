@@ -61,7 +61,7 @@ const buttonIndex = ref(1);
     <div class="signPage">
 
       <div class="logoBar">
-        <img alt="LOGO" class="logo" src="../assets/img/logo.png">
+        <img alt="LOGO" class="logo" src="../assets/img/logo1.png">
       </div>
         <el-card class="container">
             <template #header>
@@ -127,9 +127,9 @@ const buttonIndex = ref(1);
 }
 .logo {
     position: absolute;
-    top: 12%;
-    height: 94px;
-    margin-bottom: 24px;
+    top: 10%;
+    height: 82px;
+    margin-bottom: 28px;
     width: 300px;
 }
 
