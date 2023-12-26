@@ -39,27 +39,35 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 const hasNew = ref(false);
 
 
-// setInterval(() => {
-//     const last = localStorage.getItem('lastQuestion')
-//     if (last == null) {
-//         hasNew.value = true;
-//         return;
-//     }
-//     request.get('/question/lastQuestion').then((res: any) => {
-//         const arr = res;
-//         const date = new Date(arr[0], arr[1] - 1, arr[2], arr[3], arr[4], arr[5]);
-//         const lastDate = new Date(last);
-//         if (date > lastDate) {
-//             hasNew.value = true
-//             console.log(date, lastDate)
-//             return;
-//         }
-//         else {
-//             hasNew.value = false;
-//             return;
-//         }
-//     })
-// }, 3000)
+setInterval(() => {
+    const last = localStorage.getItem('lastQuestion')
+    request.get('/question/lastQuestion').then((res: any) => {
+        if (last == null) {
+            if(res == null){
+                hasNew.value = false;
+                return;
+            }
+            else{
+                hasNew.value = true;
+                return;
+            }
+        }
+        else {
+            const arr = res;
+            const date = new Date(arr[0], arr[1] - 1, arr[2], arr[3], arr[4], arr[5]);
+            const lastDate = new Date(last);
+            if (date > lastDate) {
+                hasNew.value = true
+                // console.log(date, lastDate)
+                return;
+            }
+            else {
+                hasNew.value = false;
+                return;
+            }
+        }
+    })
+}, 3000)
 </script>
 
 <template>
@@ -90,5 +98,4 @@ const hasNew = ref(false);
     filter: blur(0.5px);
     width: 100%;
 }
-
 </style>

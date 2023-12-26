@@ -8,14 +8,18 @@ const uid = ref(localStorage.getItem('userId'));//用户登录用户id
 onMounted(() => {
     //获取问题上方的关注列表，按最近更新时间排序
     getFollowedAuthorList();
+    
     //将最近更新时间存入localstorage，如果没有，则直接存，如果有，则比较时间，存入最新的时间，
     //并且对更改的作者进行标记，标记为true，表示有更新，标记为false，表示没有更新
     //获取所有问题列表，按时间排序
     getFollowedQuestionList();
+    // console.log('问题列表')
+    // console.log(questionList.value);
 })
 
 const getFollowedQuestionList = () => {
     request.get(`/question/getQuestionById/${uid.value}`).then((res) => {
+        console.log(res.data);
         questionList.value = res.data.map((item: any) => ({
             id: item.id,
             uid: item.uid,
@@ -31,7 +35,10 @@ const getFollowedQuestionList = () => {
             star: item.star,
             comment: item.comment,
         }));
+        // console.log(questionList.value)
         originalQuestionList.value = questionList.value;//存储原始关注信息
+        // console.log(originalQuestionList.value)
+        // console.log(authorList.value)
     }).catch((err) => {
         console.log(err);
     })
@@ -39,6 +46,9 @@ const getFollowedQuestionList = () => {
 const getFollowedAuthorList = () => {
     request.get(`/question/getUpdateUser/${uid.value}`).then((res) => {
         authorList.value = res.data;
+        console.log('作者列表')
+        console.log(res.data)
+        console.log(authorList.value)
     }).catch((err) => {
         console.log(err);
     })
@@ -48,12 +58,13 @@ class author {
     id: number;//作者id
     name: string;//作者名字
     touXiang: string;//作者头像
-    isFollowed = true;//当前用户是否关注了当前作者
+    isFollowed: boolean;//当前用户是否关注了当前作者
     updateTime: Array<number>;//作者最近更新时间,localstorage存储上一次查看的时间，用以判断作者是否更新
-    constructor(id: number, name: string, touXiang: string, updateTime: Array<number>) {
+    constructor(id: number, name: string, touXiang: string, isFollowed: boolean,updateTime: Array<number>) {
         this.id = id;
         this.name = name;
         this.touXiang = touXiang;
+        this.isFollowed = isFollowed;
         this.updateTime = updateTime;
     }
 }
@@ -338,7 +349,7 @@ const handleLike = (question: any) => {
     margin-bottom: 10px;
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 25px;
-    padding: 5px 5px;
+    padding: 15px 5px 5px 15px;
 }
 
 .authorhead {

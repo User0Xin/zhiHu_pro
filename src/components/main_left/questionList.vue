@@ -31,7 +31,7 @@ watch(tab, (newValue: string) => {
         // load();
     }
     else if (newValue == '我的收藏') {
-        if (localStorage.getItem('isLogin') == null) {
+        if (localStorage.getItem('userId') == null) {
             //先作是否登录的处理
             pleaseLogin();
             questions.value = [];
@@ -39,7 +39,7 @@ watch(tab, (newValue: string) => {
             return;
         }
         else {
-            method.value = 'listQuestionByUidByPage'
+            method.value = 'listStaredQuestion'
             hasMore.value = true;
             orderBy.value = 'time'
             idOrFlag.value = 1;
@@ -49,7 +49,7 @@ watch(tab, (newValue: string) => {
         }
     }
     else if (newValue == '我的问题') {
-        if (localStorage.getItem('isLogin') == null) {
+        if (localStorage.getItem('userId') == null) {
             //先作是否登录的处理
             pleaseLogin();
             questions.value = [];
@@ -67,7 +67,7 @@ watch(tab, (newValue: string) => {
         }
     }
     else if (newValue == '草稿箱') {
-        if (localStorage.getItem('isLogin') == null) {
+        if (localStorage.getItem('userId') == null) {
             //先作是否登录的处理
             pleaseLogin();
             questions.value = [];
@@ -85,7 +85,7 @@ watch(tab, (newValue: string) => {
         }
     }
     else if (newValue == '我的问题') {
-        if (localStorage.getItem('isLogin') == null) {
+        if (localStorage.getItem('userId') == null) {
             //先作是否登录的处理
             pleaseLogin();
             questions.value = [];
@@ -103,7 +103,7 @@ watch(tab, (newValue: string) => {
         }
     }
     else if (newValue == '草稿箱') {
-        if (localStorage.getItem('isLogin') == null) {
+        if (localStorage.getItem('userId') == null) {
             //先作是否登录的处理
             pleaseLogin();
             questions.value = [];

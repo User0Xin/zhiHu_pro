@@ -180,7 +180,7 @@ const getImageUrl = (name: string) => {
         <!-- 推荐列表 -->
         <div class="recommendUser" v-for="item in recommendUser">
             <div style="display: flex; align-items: center;">
-                <el-avatar size="large" :src="getImageUrl(item.touXiang)" style="margin-right: 10px;"
+                <el-avatar size="large" :src=item.touXiang style="margin-right: 10px;"
                     @click="handleToPersonalPage"></el-avatar>
                 <div>
                     <div style="font-size: 16px; font-weight: bold;" @click="handleToPersonalPage">

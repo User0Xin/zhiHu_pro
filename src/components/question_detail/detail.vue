@@ -44,7 +44,7 @@ class authorInfo {
     }
 }
 // const url = '../../assets/img/touXiang02.png';
-const info = ref<authorInfo>(new authorInfo('小猪佩奇3号', 100, 200, 0, '../../assets/img/touXiang03.png', false));
+const info = ref<authorInfo>(new authorInfo('默认用户', 100, 200, 0, '../../assets/img/touXiang03.png', false));
 
 const setLocalStorage = () => {
     localStorage.setItem('questionDetail', JSON.stringify(questionDetail.value));
@@ -604,7 +604,7 @@ onBeforeUnmount(() => {
 }
 
 img {
-    object-fit: contain;
+    object-fit: cover;
     width: 100%;
     height: 100%;
     border-radius: 50%;
@@ -743,7 +743,7 @@ img {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-
+    object-fit: cover;
 }
 
 .commentItem .item-content {
