@@ -3,12 +3,38 @@ import questionList from './questionList.vue';
 import { onMounted, ref, watch } from 'vue'
 import { useQuestionStore } from '@/stores/questionStore';
 import router from '@/router';
+import reques from '@/utils/request';
 const questionStore = useQuestionStore()
-
+const loadText = ref('加载更多')
+const hasMore = ref(true)
+const uid = localStorage.getItem('userId')
+const keyword = ref(router.currentRoute.value.query.searchKeyword)
+// const keyword = ref(questionStore.searchKey)
+// const keyword = ref(localStorage.getItem('searchKey') ? localStorage.getItem('searchKey') : '')
 onMounted(() => {
-  console.log(questionStore.searchKey)
-  
+  // alert('搜索页面' + keyword.value)
+  searchQuestion(keyword.value)
 })
+
+const searchQuestion = (keyword:any) => {
+  reques.get(`/question/searchQuestionByPage/1/${uid}`, { params: { keyword: keyword } })
+    .then(res => {
+      questions.value = res.data
+    })
+}
+watch(keyword, (newVal) => {
+  console.log('keyword变化')
+  questions.value = []
+  searchQuestion(newVal!)
+})
+
+setInterval(() => {
+  console.log(keyword.value)
+}, 1000)
+// watch(keyword, async (newVal) => {
+//   alert('keyword变化');
+//   questions.value = await searchQuestion(newVal); // 更新 questions
+// });
 
 class question {
   id: number;
@@ -40,81 +66,81 @@ const questions = ref<question[]>([
     authorId: 2,
     title: '这是一个问题',
     content: '这是一个问题这是一个问'
-  },{
+  }, {
     id: 2,
     authorId: 2,
     title: '这是一个问题',
     content: '这是一个问题这是一个问'
-  },{
+  }, {
     id: 2,
     authorId: 2,
     title: '这是一个问题',
     content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }
-  ,{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
+  }, {
     id: 2,
     authorId: 2,
     title: '这是一个问题',
     content: '这是一个问题这是一个问'
   }
-  ,{
+  , {
     id: 2,
     authorId: 2,
     title: '这是一个问题',
     content: '这是一个问题这是一个问'
-  },{
+  }, {
     id: 2,
     authorId: 2,
     title: '这是一个问题',
     content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }
-  ,{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
+  }, {
     id: 2,
     authorId: 2,
     title: '这是一个问题',
     content: '这是一个问题这是一个问'
   }
-  ,{
+  , {
     id: 2,
     authorId: 2,
     title: '这是一个问题',
     content: '这是一个问题这是一个问'
-  },{
+  }, {
     id: 2,
     authorId: 2,
     title: '这是一个问题',
     content: '这是一个问题这是一个问'
-  },{
+  }, {
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  }
+  , {
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  }, {
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  }, {
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  }
+  , {
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  }, {
+    id: 2,
+    authorId: 2,
+    title: '这是一个问题',
+    content: '这是一个问题这是一个问'
+  }, {
     id: 2,
     authorId: 2,
     title: '这是一个问题',
@@ -151,9 +177,10 @@ const toComment = (id: number, authorId: number) => {
 </template>
 
 <style scoped>
-.contain{
+.contain {
   min-height: 91vh;
 }
+
 .body {
   background-color: rgba(255, 255, 255, 0.5);
   width: 60%;
@@ -182,4 +209,5 @@ const toComment = (id: number, authorId: number) => {
   text-align: center;
   padding-bottom: 10px;
   color: #000;
-}</style>
+}
+</style>
