@@ -7,19 +7,17 @@ const activeAuthor = ref(-1)//-1表示全部动态，其他表示某个作者动
 const uid = ref(localStorage.getItem('userId'));//用户登录用户id
 onMounted(() => {
     //获取问题上方的关注列表，按最近更新时间排序
-    getFollowedAuthorList();
-
+    getFollowedAuthorList();//先调用获取关注列表，在获取到关注列表后再调用获取问题列表 ./
     //将最近更新时间存入localstorage，如果没有，则直接存，如果有，则比较时间，存入最新的时间，
     //并且对更改的作者进行标记，标记为true，表示有更新，标记为false，表示没有更新
     //获取所有问题列表，按时间排序
-    getFollowedQuestionList();
     // console.log('问题列表')
     // console.log(questionList.value);
 })
 
 const getFollowedQuestionList = () => {
     request.get(`/question/getQuestionById/${uid.value}`).then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         questionList.value = res.data.map((item: any) => ({
             id: item.id,
             uid: item.uid,
@@ -46,9 +44,10 @@ const getFollowedQuestionList = () => {
 const getFollowedAuthorList = () => {
     request.get(`/question/getUpdateUser/${uid.value}`).then((res) => {
         authorList.value = res.data;
-        console.log('作者列表')
-        console.log(res.data)
-        console.log(authorList.value)
+        // console.log('作者列表')
+        // console.log(res.data)
+        // console.log(authorList.value)
+        getFollowedQuestionList();
     }).catch((err) => {
         console.log(err);
     })
