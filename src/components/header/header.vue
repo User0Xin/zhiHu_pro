@@ -28,6 +28,12 @@ const handleClickMyPage = () => {
 const handleClickLogout = () => {
     console.log('退出登录')
     loginStore.Logout();
+    //清空登录状态
+    localStorage.removeItem('user');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('token');
+    //设置自动登录为false
+    localStorage.setItem('AutoLogin', 'false');
     router.push('/');
 }
 
