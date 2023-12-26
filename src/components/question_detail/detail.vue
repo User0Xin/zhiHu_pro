@@ -499,7 +499,7 @@ onBeforeUnmount(() => {
                                 </div>
                             </div>
                         </div>
-                        <div ref="more">没有更多了~</div>
+                        <div ref="more" style="text-align: center;">没有更多了~</div>
                     </div>
                 </div>
             </div>
@@ -581,7 +581,7 @@ onBeforeUnmount(() => {
 }
 
 .author {
-    /* position: right; */
+    /* position: right */
     width: 20%;
     height: 500px;
     background-color: #fff;

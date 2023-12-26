@@ -2,6 +2,8 @@
 import { ref, reactive, inject } from 'vue';
 import type { FormInstance, FormRules } from 'element-plus'
 import { useLoginStore } from '@/stores/loginStore';
+import request from '@/utils/request';
+import router from '@/router';
 const loginStore = useLoginStore();
 const hidedialogForm = inject('hidedialogForm') as any;
 
@@ -41,6 +43,19 @@ const submitForm = async (formEl: FormInstance | undefined, ruleForm: RuleForm) 
             console.log(ruleForm)
             console.log("发送请求")
             // 发送请求，后端返回token，把token放到localstorage中，后面每次请求带上token
+            request.post('/admin/login', ruleForm).then(res => {
+                console.log(res);
+                if (res.code == 505) {
+                    alert(res.msg);
+                } else {
+                    localStorage.setItem('user', JSON.stringify(res.data));
+                    localStorage.setItem('userId', res.data.userId);
+                    loginStore.Login();
+                    router.push('/');
+                }
+
+
+            })
             loginStore.Login();
             hidedialogForm();
         }

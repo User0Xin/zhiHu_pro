@@ -8,6 +8,7 @@ import { useLoginStore } from '@/stores/loginStore';
 import { useQuestionStore } from '@/stores/questionStore';
 import { ElNotification } from 'element-plus'
 const loginStore = useLoginStore()
+const questionStore = useQuestionStore()
 const input = ref('')
 const state = reactive({
     circleUrl:
@@ -95,19 +96,12 @@ const user = ref<User>(new User('小猪佩奇', 'touXiang01.png'));
 
 //搜索
 const search = () => {
-    if(localStorage.getItem('userId') == null){
+    if (localStorage.getItem('userId') == null) {
         pleaseLogin();
     }
-    else{
-        // alert("search")
-        // questionStore.setSearchKey(input.value)
-        // console.log(questionStore.searchKey)
-        // localStorage.setItem('searchKey', input.value)
-        // console.log(localStorage.getItem('searchKey'))
-        // router.push('/search');
-        // alert('搜索回车' + input.value)
-        // router.go(0);
-        router.push({ path: '/search', query: { searchKeyword: input.value } });
+    else {
+        questionStore.searchQuestion(input.value, localStorage.getItem('userId'))
+        router.push({ path: '/search' });
     }
 }
 const pleaseLogin = () => {
@@ -118,6 +112,14 @@ const pleaseLogin = () => {
         offset: 50
     })
 }
+
+const getLocalUser = () => {
+    const user = localStorage.getItem('user');
+    if (user) {
+        return JSON.parse(user);
+    }
+    return null;
+}
 </script>
 
 <template>
@@ -127,14 +129,18 @@ const pleaseLogin = () => {
             <div class="title" @click="backToMain">百度产品论坛</div>
         </div>
         <div class="searchInput">
-            <el-input v-model="input" placeholder="Please input" class="input-with-select" @keyup.enter="search">
+            <el-input v-model="input" placeholder="搜索你感兴趣的内容。。" class="input-with-select" @keyup.enter="search">
                 <template #append>
-                    <el-button :icon="Search" />
+                    <el-button class="searchButton" @click="search" style="background-color: #409eff;">
+                        <el-icon size="16px" color="#fff">
+                            <Search />
+                        </el-icon>
+                    </el-button>
                 </template>
             </el-input>
         </div>
         <div style="display: flex; justify-content: center; align-items: center;">
-            <div class="UserName" v-if="loginStore.isLogin">{{ user.name }}</div>
+            <div class="UserName" v-if="loginStore.isLogin">{{ getLocalUser().name }}</div>
             <el-button link v-if="!loginStore.isLogin" @click="handleLogin">请登录</el-button>
             <div class="touXiang" style="margin-left: 10px;">
                 <!-- 未登录 -->
@@ -144,7 +150,7 @@ const pleaseLogin = () => {
                 <!-- 已登录 -->
                 <el-dropdown trigger="click" v-if="loginStore.isLogin">
                     <span class="el-dropdown-link">
-                        <el-avatar :size="40" :src="getImageUrl(user.touXiang)" />
+                        <el-avatar :size="40" :src="getLocalUser().touXiang" />
                     </span>
                     <template #dropdown>
                         <el-dropdown-menu>
@@ -186,10 +192,8 @@ const pleaseLogin = () => {
 
 /* 搜索 */
 .searchInput {
-
     width: 35%;
 }
-
 
 
 .input-with-select {
@@ -228,6 +232,7 @@ img {
     height: 90px;
     justify-items: center;
 }
+
 .logo .title:hover {
     cursor: default;
 }

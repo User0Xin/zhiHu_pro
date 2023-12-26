@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import questionList from './questionList.vue';
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, computed } from 'vue'
 import { useQuestionStore } from '@/stores/questionStore';
 import router from '@/router';
 import reques from '@/utils/request';
@@ -8,33 +8,7 @@ const questionStore = useQuestionStore()
 const loadText = ref('加载更多')
 const hasMore = ref(true)
 const uid = localStorage.getItem('userId')
-const keyword = ref(router.currentRoute.value.query.searchKeyword)
-// const keyword = ref(questionStore.searchKey)
-// const keyword = ref(localStorage.getItem('searchKey') ? localStorage.getItem('searchKey') : '')
-onMounted(() => {
-  // alert('搜索页面' + keyword.value)
-  searchQuestion(keyword.value)
-})
 
-const searchQuestion = (keyword:any) => {
-  reques.get(`/question/searchQuestionByPage/1/${uid}`, { params: { keyword: keyword } })
-    .then(res => {
-      questions.value = res.data
-    })
-}
-watch(keyword, (newVal) => {
-  console.log('keyword变化')
-  questions.value = []
-  searchQuestion(newVal!)
-})
-
-setInterval(() => {
-  console.log(keyword.value)
-}, 1000)
-// watch(keyword, async (newVal) => {
-//   alert('keyword变化');
-//   questions.value = await searchQuestion(newVal); // 更新 questions
-// });
 
 class question {
   id: number;
@@ -48,105 +22,106 @@ class question {
     this.content = content;
   }
 }
-const questions = ref<question[]>([
-  {
-    id: 1,
-    authorId: 1,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },
-  {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },
-  {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }, {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }, {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }, {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }
-  , {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }, {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }, {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }
-  , {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }, {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }, {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }
-  , {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }, {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }, {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }
-  , {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }, {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }, {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }
-]);
+//   {
+//     id: 1,
+//     authorId: 1,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   },
+//   {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   },
+//   {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }
+//   , {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }
+//   , {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }
+//   , {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }
+//   , {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }
+// ]);
+const questions = computed(() => questionStore.questions as any[]);
+
 const toDetail = (id: number, authorId: number) => {
   console.log(id)
   router.push('/detailPage/' + authorId + '/' + id)
