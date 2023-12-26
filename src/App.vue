@@ -1,20 +1,38 @@
 <script setup lang="ts">
 import router from '@/router';
 import { ref, onMounted, onUnmounted } from 'vue';
-
+import { useLoginStore } from '@/stores/loginStore';
+const loginStore = useLoginStore();
 const back = () => {
   router.back();
 }
 
+onMounted(() => {
+  // 自动登录
+  if (localStorage.getItem('AutoLogin') == 'true') {
+    loginStore.Login();
+  }
+})
+
+onUnmounted(() => {
+  // 如果没有设置自动登录，则要清空登录状态
+  if (localStorage.getItem('AutoLogin') == 'false') {
+    loginStore.Logout();
+    localStorage.removeItem('user');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('token');
+  }
+})
+
 </script>
 
 <template>
-      <router-view></router-view>
-      <div class="back" @click="back"></div>
+  <router-view></router-view>
+  <div class="back" @click="back"></div>
 </template>
 
 <style scoped>
-.back{
+.back {
   width: 40px;
   height: 40px;
   background-color: rgb(223, 229, 237);
@@ -22,23 +40,23 @@ const back = () => {
   top: 70px;
   left: 50px;
   border-radius: 50%;
-  box-shadow: inset 4px 4px 4px rgba(80, 80, 80, 0.3), 
-              inset -4px -4px 4px rgba(255, 255, 255, 0.7),
-              -5px -5px 5px rgba(0,0,0,0.5);
+  box-shadow: inset 4px 4px 4px rgba(80, 80, 80, 0.3),
+    inset -4px -4px 4px rgba(255, 255, 255, 0.7),
+    -5px -5px 5px rgba(0, 0, 0, 0.5);
   transition: all 0.3s;
 }
-.back:hover{
+
+.back:hover {
   transform: translate(2px, 2px) scale(1.08, 1.08);
-  box-shadow: -15px -15px 10px rgba(0,0,0,0.1),
-              inset 6px 6px 6px rgba(99, 94, 94, 0.3), 
-              inset -6px -6px 4px rgba(255, 255, 255, 0.9),;
+  box-shadow: -15px -15px 10px rgba(0, 0, 0, 0.1),
+    inset 6px 6px 6px rgba(99, 94, 94, 0.3),
+    inset -6px -6px 4px rgba(255, 255, 255, 0.9), ;
   cursor: pointer;
 }
-.back:active{
+
+.back:active {
   background-color: #ebe2cd;
   transform: translateY(-1px);
 }
-
-
 </style>
 @/stores/loginStore
