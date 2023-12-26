@@ -339,7 +339,7 @@ const filteredQuestions = computed(() => {
         );
 });
 //匹配文本中的img标签
-const imgTagRegex = /< img\b[^>]*>/gi;
+const imgTagRegex = /<img\b[^>]*>/gi;
 const headingRegex = /^#+\s/gm; // 匹配以#开头的行
 // 匹配强调（* 或 _）
 const emphasisRegex = /(?:\*|_)(.*?)(?:\*|_)/g;
