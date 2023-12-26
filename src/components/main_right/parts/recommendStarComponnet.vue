@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { ElNotification } from 'element-plus'
+import request from '@/utils/request'
 // 总用户数
 const totalUser = ref(5);
 // 当前页
@@ -42,10 +43,10 @@ onMounted(() => {
     //先判断是否登录，如果未登录，获取的推荐用户统一未关注
     const uid = localStorage.getItem('userId')
     if(uid == null){
-        
-        
+        pleaseLogin();
     }else{
-        
+        console.log('优质博主')
+        // request.get()
     }
     //登录后按照实际关注情况获取
     receieveRecommendUser.value = [

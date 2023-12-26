@@ -10,6 +10,7 @@ const commentDom = ref<HTMLElement | null>(null);
 const questionDetail = ref(JSON.parse(localStorage.getItem('questionDetail')!));
 const userId = localStorage.getItem('userId');
 onMounted(() => {
+    window.scrollTo(0, 0);
     console.log('作者id ' + currentUid);
     console.log('文章id ' + currentAriticleId);
     if (to == 'comment') {
@@ -42,7 +43,7 @@ class authorInfo {
         this.isFollowed = isFollowed;
     }
 }
-const url = '../../assets/img/touXiang02.png';
+// const url = '../../assets/img/touXiang02.png';
 const info = ref<authorInfo>(new authorInfo('小猪佩奇3号', 100, 200, 0, '../../assets/img/touXiang03.png', false));
 
 const setLocalStorage = () => {
@@ -504,7 +505,7 @@ onBeforeUnmount(() => {
             </div>
             <div class=" author">
                 <div class="head">
-                    <img src='../../assets/img/touXiang03.png' />
+                    <img :src=info.touXiang />
                 </div>
                 <div class="name">
                     <span>{{ info.name }}</span>
@@ -606,7 +607,7 @@ img {
     object-fit: contain;
     width: 100%;
     height: 100%;
-    border-radius: 30px;
+    border-radius: 50%;
 }
 
 .author .head {

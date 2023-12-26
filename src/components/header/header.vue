@@ -6,6 +6,7 @@ import signComponent from '@/components/sign/signComponent.vue'
 import loginComponent from '@/components/sign/loginComponent.vue'
 import { useLoginStore } from '@/stores/loginStore';
 import { useQuestionStore } from '@/stores/questionStore';
+import { ElNotification } from 'element-plus'
 const loginStore = useLoginStore()
 const questionStore = useQuestionStore()
 const input = ref('')
@@ -27,6 +28,12 @@ const handleClickMyPage = () => {
 const handleClickLogout = () => {
     console.log('退出登录')
     loginStore.Logout();
+    //清空登录状态
+    localStorage.removeItem('user');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('token');
+    //设置自动登录为false
+    localStorage.setItem('AutoLogin', 'false');
     router.push('/');
 }
 
@@ -95,8 +102,21 @@ const user = ref<User>(new User('小猪佩奇', 'touXiang01.png'));
 
 //搜索
 const search = () => {
-    questionStore.setSearchKey(input.value)
-    router.push('/search');
+    if (localStorage.getItem('userId') == null) {
+        pleaseLogin();
+    }
+    else {
+        questionStore.searchQuestion(input.value, localStorage.getItem('userId'))
+        router.push({ path: '/search' });
+    }
+}
+const pleaseLogin = () => {
+    ElNotification({
+        title: '提示',
+        message: '请先登录',
+        type: 'warning',
+        offset: 50
+    })
 }
 
 const getLocalUser = () => {

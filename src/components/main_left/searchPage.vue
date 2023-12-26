@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import questionList from './questionList.vue';
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, computed } from 'vue'
 import { useQuestionStore } from '@/stores/questionStore';
 import router from '@/router';
+import reques from '@/utils/request';
 const questionStore = useQuestionStore()
+const loadText = ref('加载更多')
+const hasMore = ref(true)
+const uid = localStorage.getItem('userId')
 
-onMounted(() => {
-  console.log(questionStore.searchKey)
-  
-})
 
 class question {
   id: number;
@@ -22,105 +22,106 @@ class question {
     this.content = content;
   }
 }
-const questions = ref<question[]>([
-  {
-    id: 1,
-    authorId: 1,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },
-  {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },
-  {
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }
-  ,{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }
-  ,{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }
-  ,{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }
-  ,{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  },{
-    id: 2,
-    authorId: 2,
-    title: '这是一个问题',
-    content: '这是一个问题这是一个问'
-  }
-]);
+//   {
+//     id: 1,
+//     authorId: 1,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   },
+//   {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   },
+//   {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }
+//   , {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }
+//   , {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }
+//   , {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }
+//   , {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }, {
+//     id: 2,
+//     authorId: 2,
+//     title: '这是一个问题',
+//     content: '这是一个问题这是一个问'
+//   }
+// ]);
+const questions = computed(() => questionStore.questions as any[]);
+
 const toDetail = (id: number, authorId: number) => {
   console.log(id)
   router.push('/detailPage/' + authorId + '/' + id)
@@ -151,9 +152,10 @@ const toComment = (id: number, authorId: number) => {
 </template>
 
 <style scoped>
-.contain{
+.contain {
   min-height: 91vh;
 }
+
 .body {
   background-color: rgba(255, 255, 255, 0.5);
   width: 60%;
@@ -182,4 +184,5 @@ const toComment = (id: number, authorId: number) => {
   text-align: center;
   padding-bottom: 10px;
   color: #000;
-}</style>
+}
+</style>
