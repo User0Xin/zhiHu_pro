@@ -103,7 +103,7 @@ const countDown = () => {
 
 //发送验证码
 const sendCode = () => {
-    request.post('/admin/checkEmail' + `/${ruleForm.account}/${ruleForm.email}`).then(res => {
+    request.post('/admin/checkEmail' + `/${ruleForm.account}/${ruleForm.email}@qq.com`).then(res => {
         if (res.code == 505) {
             alert(res.msg);
         } else {
