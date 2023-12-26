@@ -230,12 +230,12 @@ const handleCollect = (question: any) => {
                 else question.star--;
                 question.isStared = !question.isStared;
             }
+
+            if (tab.value == '我的收藏' && !question.isStared) {
+                questions.value = questions.value.filter((questionItem: question) => questionItem.id !== question.id);
+            }
         })
-    alert(tab.value=='我的收藏' && question.isStared)
-    if (tab.value == '我的收藏' && question.isStared == false) {
-        alert('取消收藏')
-        questions.value = questions.value.filter((questionItem: question) => questionItem.id !== question.id);
-    }
+
 }
 
 
