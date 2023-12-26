@@ -2,6 +2,7 @@
 import { ref, reactive, inject } from 'vue';
 import type { FormInstance, FormRules } from 'element-plus'
 import { useLoginStore } from '@/stores/loginStore';
+import request from "@/utils/request";
 const loginStore = useLoginStore();
 const hidedialogForm = inject('hidedialogForm') as any;
 
@@ -41,6 +42,10 @@ const submitForm = async (formEl: FormInstance | undefined, ruleForm: RuleForm) 
             console.log(ruleForm)
             console.log("发送请求")
             // 发送请求，后端返回token，把token放到localstorage中，后面每次请求带上token
+            //在提交表单后发请求
+          //要和接口文档对应上
+
+
             loginStore.Login();
             hidedialogForm();
         }
