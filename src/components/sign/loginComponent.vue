@@ -59,9 +59,16 @@ const submitForm = async (formEl: FormInstance | undefined, ruleForm: RuleForm) 
           if (ruleForm.type.includes('自动登录')) {
             localStorage.setItem('AutoLogin', 'true');
           }
+          // 保存token
           localStorage.setItem('user', JSON.stringify(res.data));
+          // 保存userId
           localStorage.setItem('userId', res.data.userId);
+
+          // 保存登录状态
           loginStore.Login();
+          //存储用户名和头像
+          loginStore.setUserName(res.data.name);
+          loginStore.setTouXiang(res.data.touXiang);
           router.push('/');
         }
       })
@@ -84,7 +91,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
 
 <template>
   <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" label-width="80px" class="demo-ruleForm" :size="formSize"
-           status-icon style="padding-right: 25px;">
+    status-icon style="padding-right: 25px;">
     <el-form-item label="账号" prop="account">
       <el-input v-model="ruleForm.account" type="text" />
     </el-form-item>

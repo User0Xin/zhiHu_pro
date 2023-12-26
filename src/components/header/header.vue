@@ -146,7 +146,8 @@ const getLocalUser = () => {
             </el-input>
         </div>
         <div style="display: flex; justify-content: center; align-items: center;">
-            <div class="UserName" v-if="loginStore.isLogin">{{ getLocalUser().name }}</div>
+            <div class="UserName" v-if="loginStore.isLogin">{{
+                loginStore.userName != '' ? loginStore.userName : getLocalUser().name }}</div>
             <el-button link v-if="!loginStore.isLogin" @click="handleLogin">请登录</el-button>
             <div class="touXiang" style="margin-left: 10px;">
                 <!-- 未登录 -->
@@ -156,7 +157,8 @@ const getLocalUser = () => {
                 <!-- 已登录 -->
                 <el-dropdown trigger="click" v-if="loginStore.isLogin">
                     <span class="el-dropdown-link">
-                        <el-avatar :size="40" :src="getLocalUser().touXiang" />
+                        <el-avatar :size="40"
+                            :src="loginStore.touXiang != '' ? loginStore.touXiang : getLocalUser().touXiang" />
                     </span>
                     <template #dropdown>
                         <el-dropdown-menu>

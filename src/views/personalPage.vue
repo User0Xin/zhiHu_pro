@@ -3,8 +3,11 @@ import { ref, onMounted } from 'vue'
 import createComponent from '@/components/main_right/parts/createComponent.vue';
 import webInfo from '@/components/main_right/parts/webInfo.vue'
 import type { TabsPaneContext } from 'element-plus'
+import type { UploadProps, UploadUserFile } from 'element-plus'
 import { ElNotification } from 'element-plus'
 import request from '@/utils/request';
+import { useLoginStore } from '@/stores/loginStore';
+const loginStore = useLoginStore();
 // 个人信息
 class Person {
     name: string;
@@ -68,7 +71,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 }
 
 
-const dialogFormVisible = ref(true)
+const dialogFormVisible = ref(false)
 const formLabelWidth = '100px'
 
 const form = ref({
@@ -90,7 +93,7 @@ const loadInfo = () => {
 }
 
 const handleSubmmit = () => {
-    request.post('/updateUserInfo' + `/${localStorage.getItem('userId')}`, form.value).then(res => {
+    request.post('/user/updateUserInfo' + `/${localStorage.getItem('userId')}`, form.value).then(res => {
         if (res.code == 505) {
             ElNotification({
                 title: '提示',
@@ -99,6 +102,17 @@ const handleSubmmit = () => {
                 offset: 50
             })
         } else {
+            // 更新个人信息
+            request.get('/user/getUserInfo' + `/${localStorage.getItem('userId')}`).then(res => {
+                person.value = res.data;
+            })
+            //更新localStorage
+            const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null;
+            user.name = person.value.name;
+            localStorage.setItem('user', JSON.stringify(user));
+            // 更新pinia
+            loginStore.setUserName(person.value.name);
+            loginStore.setTouXiang(person.value.touXiang);
             ElNotification({
                 title: '提示',
                 message: '修改成功',
@@ -110,6 +124,45 @@ const handleSubmmit = () => {
     dialogFormVisible.value = false;
 }
 
+
+
+const handleAvatarSuccess: UploadProps['onSuccess'] = (
+    response,
+    uploadFile
+) => {
+    const touXiangForm = ref({
+        touXiang: ''
+    })
+    touXiangForm.value.touXiang = response.data;
+    request.post('/user/updateUserInfo' + `/${localStorage.getItem('userId')}`, touXiangForm.value).then(res => {
+        if (res.code == 505) {
+            ElNotification({
+                title: '提示',
+                message: res.msg,
+                type: 'warning',
+                offset: 50
+            })
+        } else {
+            // 更新个人信息
+            request.get('/user/getUserInfo' + `/${localStorage.getItem('userId')}`).then(res => {
+                person.value = res.data;
+            })
+            //更新localStorage
+            const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null;
+            user.touXiang = touXiangForm.value.touXiang;
+            localStorage.setItem('user', JSON.stringify(user));
+            // 更新pinia
+            loginStore.setTouXiang(touXiangForm.value.touXiang);
+            ElNotification({
+                title: '提示',
+                message: '修改成功',
+                type: 'success',
+                offset: 50
+            })
+        }
+    })
+
+}
 </script>
 
 <template>
@@ -140,6 +193,11 @@ const handleSubmmit = () => {
                     {{ person.description }}
                 </span>
             </div>
+            <el-upload class="avatar-uploader" action="http://localhost:8081/question/uploadFile" :show-file-list="false"
+                :on-success="handleAvatarSuccess">
+                <el-button class="touxiang-button" link>修改头像</el-button>
+            </el-upload>
+
             <el-button class="edit-button" type="default" @click="handleEditPersonalInfo">编辑个人资料</el-button>
         </el-card>
         <div class="bottom-box">
@@ -311,6 +369,19 @@ const handleSubmmit = () => {
     width: 118px;
     height: 34px;
 }
+
+.touxiang-button {
+    position: absolute;
+    top: 80%;
+    left: 17%;
+    font-size: 14px;
+    font-weight: 500;
+    color: #155eca;
+    padding: 5px 10px;
+    width: 118px;
+    height: 34px;
+}
+
 
 .edit-button:focus,
 .edit-button:active {
