@@ -5,9 +5,9 @@
 
 
 <template>
-    <div>
+    <el-card>
 
-    </div>
+    </el-card>
 </template>
 
 
