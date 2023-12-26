@@ -3,8 +3,6 @@ import { ref, reactive, inject } from 'vue';
 import type { ElCarousel, FormInstance, FormRules } from 'element-plus'
 import { useLoginStore } from '@/stores/loginStore';
 import request from '@/utils/request';
-const loginStore = useLoginStore();
-const hidedialogForm = inject('hidedialogForm') as any;
 
 
 const totalForm = ref({

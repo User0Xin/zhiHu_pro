@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import createComponent from '@/components/main_right/parts/createComponent.vue';
 import webInfo from '@/components/main_right/parts/webInfo.vue'
 import type { TabsPaneContext } from 'element-plus'
+import { ElNotification } from 'element-plus'
 import request from '@/utils/request';
 // 个人信息
 class Person {
@@ -55,7 +56,7 @@ const handleClickFollowed = () => {
 
 // 点击编辑个人资料
 const handleEditPersonalInfo = () => {
-    console.log('编辑个人资料');
+    dialogFormVisible.value = true;
 }
 // 当前选中的tab
 const activeName = ref('个人信息')
@@ -65,6 +66,50 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
     console.log(tab, event);
 
 }
+
+
+const dialogFormVisible = ref(true)
+const formLabelWidth = '100px'
+
+const form = ref({
+    name: '',
+    sex: '',
+    age: 0,
+    birthday: '',
+    description: '',
+    job: ''
+})
+
+const loadInfo = () => {
+    form.value.name = person.value.name;
+    form.value.sex = person.value.sex;
+    form.value.age = person.value.age;
+    form.value.birthday = person.value.birthday;
+    form.value.description = person.value.description;
+    form.value.job = person.value.job;
+}
+
+const handleSubmmit = () => {
+    request.post('/updateUserInfo' + `/${localStorage.getItem('userId')}`, form.value).then(res => {
+        if (res.code == 505) {
+            ElNotification({
+                title: '提示',
+                message: res.msg,
+                type: 'warning',
+                offset: 50
+            })
+        } else {
+            ElNotification({
+                title: '提示',
+                message: '修改成功',
+                type: 'success',
+                offset: 50
+            })
+        }
+    })
+    dialogFormVisible.value = false;
+}
+
 </script>
 
 <template>
@@ -161,6 +206,42 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
             </div>
         </div>
     </div>
+
+
+    <el-dialog v-model="dialogFormVisible" title="编辑个人资料" @open="loadInfo" style="width: 650px;padding-right: 50px;"
+        destroy-on-close>
+        <el-form :model="form">
+            <el-form-item label="用户名" :label-width="formLabelWidth">
+                <el-input v-model="form.name" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="性别" :label-width="formLabelWidth">
+                <el-radio-group v-model="form.sex">
+                    <el-radio label="男" />
+                    <el-radio label="女" />
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item label="年龄" :label-width="formLabelWidth">
+                <el-input v-model="form.age" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="生日" :label-width="formLabelWidth">
+                <el-date-picker v-model="form.birthday" type="date" placeholder="Pick a date" style="width: 100%" />
+            </el-form-item>
+            <el-form-item label="工作" :label-width="formLabelWidth">
+                <el-input v-model="form.job" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="个人简介" :label-width="formLabelWidth">
+                <el-input v-model="form.description" autocomplete="off" maxlength="20" show-word-limit />
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleSubmmit">
+                    提交
+                </el-button>
+            </span>
+        </template>
+    </el-dialog>
 </template>
 
 <style scoped>

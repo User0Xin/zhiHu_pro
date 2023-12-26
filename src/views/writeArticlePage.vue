@@ -360,7 +360,7 @@ const handleUploadImg = () => {
                     </div>
                 </template>
                 <el-form-item label="设置标题" prop="title">
-                    <el-input placeholder="请输入标题" v-model="ruleForm.title"></el-input>
+                    <el-input placeholder="请输入标题" v-model="ruleForm.title" maxlength="9" show-word-limit></el-input>
                 </el-form-item>
                 <el-form-item label="添加封面" prop="coverurl">
                     <el-upload class="avatar-uploader" action="http://localhost:8081/question/uploadFile"
