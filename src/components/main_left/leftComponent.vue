@@ -43,11 +43,11 @@ setInterval(() => {
     const last = localStorage.getItem('lastQuestion')
     request.get('/question/lastQuestion').then((res: any) => {
         if (last == null) {
-            if(res == null){
+            if (res == null) {
                 hasNew.value = false;
                 return;
             }
-            else{
+            else {
                 hasNew.value = true;
                 return;
             }
@@ -71,28 +71,34 @@ setInterval(() => {
 </script>
 
 <template>
-    <el-card class="box-card">
-        <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-            <el-tab-pane label="热门推荐" name="推荐">
-            </el-tab-pane>
-            <el-tab-pane label="最新发布" name="最新发布">
-                <template #label>
-                    <el-badge :is-dot="hasNew" class="item">最新发布</el-badge>
-                </template>
-            </el-tab-pane>
-            <el-tab-pane label="我的收藏" name="我的收藏">
-            </el-tab-pane>
-            <el-tab-pane label="我的问题" name="我的问题">
-            </el-tab-pane>
-            <el-tab-pane label="草稿箱" name="草稿箱">
-            </el-tab-pane>
-        </el-tabs>
-        <questionList></questionList>
-    </el-card>
+    <div class="contain">
+        <el-card class="box-card">
+            <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
+                <el-tab-pane label="热门推荐" name="推荐">
+                </el-tab-pane>
+                <el-tab-pane label="最新发布" name="最新发布">
+                    <template #label>
+                        <el-badge :is-dot="hasNew" class="item">最新发布</el-badge>
+                    </template>
+                </el-tab-pane>
+                <el-tab-pane label="我的收藏" name="我的收藏">
+                </el-tab-pane>
+                <el-tab-pane label="我的问题" name="我的问题">
+                </el-tab-pane>
+                <el-tab-pane label="草稿箱" name="草稿箱">
+                </el-tab-pane>
+            </el-tabs>
+            <questionList></questionList>
+        </el-card>
+    </div>
 </template>
 
 
 <style scoped>
+.contain {
+    min-height: 1200px;
+    background-color: rgba(255, 255, 255, 0);
+}
 .box-card {
     background-color: rgba(255, 255, 255, 0.9);
     filter: blur(0.5px);

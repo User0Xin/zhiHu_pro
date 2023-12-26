@@ -231,7 +231,9 @@ const handleCollect = (question: any) => {
                 question.isStared = !question.isStared;
             }
         })
-    if (tab.value == '我的收藏' && !question.isStared) {
+    alert(tab.value=='我的收藏' && question.isStared)
+    if (tab.value == '我的收藏' && question.isStared == false) {
+        alert('取消收藏')
         questions.value = questions.value.filter((questionItem: question) => questionItem.id !== question.id);
     }
 }

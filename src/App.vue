@@ -16,7 +16,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   // 如果没有设置自动登录，则要清空登录状态
-  if (localStorage.getItem('AutoLogin') == 'false') {
+  if (localStorage.getItem('AutoLogin') == 'false' || localStorage.getItem('AutoLogin') == null) {
     loginStore.Logout();
     localStorage.removeItem('user');
     localStorage.removeItem('userId');
