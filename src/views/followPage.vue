@@ -7,15 +7,17 @@ const activeAuthor = ref(-1)//-1表示全部动态，其他表示某个作者动
 const uid = ref(localStorage.getItem('userId'));//用户登录用户id
 onMounted(() => {
     //获取问题上方的关注列表，按最近更新时间排序
-    getFollowedAuthorList();
+    getFollowedAuthorList();//先调用获取关注列表，在获取到关注列表后再调用获取问题列表 ./
     //将最近更新时间存入localstorage，如果没有，则直接存，如果有，则比较时间，存入最新的时间，
     //并且对更改的作者进行标记，标记为true，表示有更新，标记为false，表示没有更新
     //获取所有问题列表，按时间排序
-    getFollowedQuestionList();
+    // console.log('问题列表')
+    // console.log(questionList.value);
 })
 
 const getFollowedQuestionList = () => {
     request.get(`/question/getQuestionById/${uid.value}`).then((res) => {
+        // console.log(res.data);
         questionList.value = res.data.map((item: any) => ({
             id: item.id,
             uid: item.uid,
@@ -31,7 +33,10 @@ const getFollowedQuestionList = () => {
             star: item.star,
             comment: item.comment,
         }));
+        // console.log(questionList.value)
         originalQuestionList.value = questionList.value;//存储原始关注信息
+        // console.log(originalQuestionList.value)
+        // console.log(authorList.value)
     }).catch((err) => {
         console.log(err);
     })
@@ -39,6 +44,10 @@ const getFollowedQuestionList = () => {
 const getFollowedAuthorList = () => {
     request.get(`/question/getUpdateUser/${uid.value}`).then((res) => {
         authorList.value = res.data;
+        // console.log('作者列表')
+        // console.log(res.data)
+        // console.log(authorList.value)
+        getFollowedQuestionList();
     }).catch((err) => {
         console.log(err);
     })
@@ -48,12 +57,13 @@ class author {
     id: number;//作者id
     name: string;//作者名字
     touXiang: string;//作者头像
-    isFollowed = true;//当前用户是否关注了当前作者
+    isFollowed: boolean;//当前用户是否关注了当前作者
     updateTime: Array<number>;//作者最近更新时间,localstorage存储上一次查看的时间，用以判断作者是否更新
-    constructor(id: number, name: string, touXiang: string, updateTime: Array<number>) {
+    constructor(id: number, name: string, touXiang: string, isFollowed: boolean, updateTime: Array<number>) {
         this.id = id;
         this.name = name;
         this.touXiang = touXiang;
+        this.isFollowed = isFollowed;
         this.updateTime = updateTime;
     }
 }
@@ -125,27 +135,60 @@ const changeActiveBox = (index: number, authorId: number) => {
         questionList.value = originalQuestionList.value;
     }
 }
+const allHasNew = ref(false);//全部动态是否有更新
 const hasNew = ref((author: author) => {
-    const lastUpdateTime = localStorage.getItem('lastUpdateTimeAuthor' + author.id);
-    if (lastUpdateTime == null) {
-        return true;
-    } else {
-        const lastTime = new Date(lastUpdateTime);
-        const date = new Date(author.updateTime[0], author.updateTime[1] - 1, author.updateTime[2], author.updateTime[3], author.updateTime[4], author.updateTime[5]);
-        if (date > lastTime) {
+    const key = author.id + '-lastVisitTime';
+    const lastVisitTime = localStorage.getItem(key);//拿到上一次访问这个作者的文章时间
+    if (lastVisitTime == null) {//本地无访问该作者的最近时间
+        if (author.updateTime != null){
+            allHasNew.value = true;
+            return true;//当作者有最近问题发布时间且本地无访问该作者记录
+        }
+        else if (author.updateTime == null)
+            return false;//当作者无最近问题发布时间
+    } else if (lastVisitTime != null) {
+        const lastVisitDate = new Date(lastVisitTime);
+        const currentUpdateTime = new Date(author.updateTime[0], author.updateTime[1] - 1, author.updateTime[2], author.updateTime[3], author.updateTime[4], author.updateTime[5]);
+        if (currentUpdateTime > lastVisitDate) {
+            allHasNew.value = true;
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
+
+    // if (lastUpdateTime == null) {
+    //     return true;
+    // } else {
+    //     const lastTime = new Date(lastUpdateTime);
+    //     const date = new Date(author.updateTime[0], author.updateTime[1] - 1, author.updateTime[2], author.updateTime[3], author.updateTime[4], author.updateTime[5]);
+    //     if (date > lastTime) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
     //判断作者是否有更新
 })
 
 const toDetail = (question: question) => {
+    const key = question.author.id + '-lastVisitTime';
+    const lastVisitTime = localStorage.getItem(key);
+    const arr = question.time;
+
     localStorage.setItem('questionDetail', JSON.stringify(question));
     const lastQuestionTime = localStorage.getItem('lastQuestion');
-    const arr = question.time;
     const date = new Date(arr[0], arr[1] - 1, arr[2], arr[3], arr[4], arr[5]);
+    if (lastVisitTime == null) {
+        localStorage.setItem(key, date.toString());//在没访问过该作者文章时，设置本地最近访问时间
+    }
+    else {
+        const lastTime = new Date(lastVisitTime);
+        if (date > lastTime) {
+            localStorage.setItem(key, date.toString());//在当前文章的更新时间晚于上一次访问时间时更新
+        }
+    }
     if (lastQuestionTime == null) {
         localStorage.setItem('lastQuestion', date.toString());
     }
@@ -195,10 +238,13 @@ const handleLike = (question: any) => {
         <div class="rightbody">
             <div class="head" style="overflow: hidden;">
                 <div class="box" :class="{ active: activeBox == -1 }" @click="changeActiveBox(-1, -1)">
-                    <div class="cover">
+                    <div class="cover" style="position: relative;">
                         <el-icon style="font-size: 30px;">
                             <Sunny />
                         </el-icon>
+                        <el-badge :is-dot="allHasNew" class="item"
+                            style="position: absolute; right: 5px; top: 0; color: rgb(0, 174, 236);">
+                        </el-badge>
                     </div>
                     <div>
                         全部动态
@@ -237,6 +283,9 @@ const handleLike = (question: any) => {
                         </div>
                     </div>
                     <div class="content" @click="toDetail(question)">
+                        <div>
+                            <h3 style="font-weight: bold;">《{{ question.title }}》</h3>
+                        </div>
                         <el-text line-clamp="3">
                             {{ noMkContent(question.content) }}
                         </el-text>
@@ -338,7 +387,7 @@ const handleLike = (question: any) => {
     margin-bottom: 10px;
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 25px;
-    padding: 5px 5px;
+    padding: 15px 5px 5px 15px;
 }
 
 .authorhead {
@@ -392,24 +441,29 @@ const handleLike = (question: any) => {
     font-size: 20px;
 
 }
+
 .options {
     display: flex;
     align-items: center;
     justify-content: space-around;
 }
+
 .optionContain {
     display: flex;
     align-items: center;
     justify-content: space-around;
 }
+
 .options .optionContain:nth-child(2) .number,
-.options .optionContain:nth-child(3) .number{
+.options .optionContain:nth-child(3) .number {
     padding-bottom: 3px;
 }
+
 /**iconfont */
 .checked {
     color: #409eff;
 }
+
 .iconfont {
     font-size: 25px;
     margin-right: 3px;
@@ -418,7 +472,7 @@ const handleLike = (question: any) => {
 .iconfont:hover {
     color: #409eff;
 }
+
 .number {
     font-size: 20px;
-}
-</style>
+}</style>

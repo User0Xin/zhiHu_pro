@@ -5,6 +5,11 @@ import type { ElCarousel, FormInstance, FormRules } from 'element-plus'
 import request from '@/utils/request';
 const activeStep = ref(1);
 import { ElMessage } from 'element-plus';
+import { Md5 } from 'ts-md5';
+
+
+// 定义MD5对象
+const md5: any = new Md5()
 
 const carouselHeight = ref('220px');
 
@@ -99,7 +104,7 @@ const rules = reactive<FormRules<RuleForm>>({
 const carousel = ref<InstanceType<typeof ElCarousel> | null>(null);
 
 
-//提交表单(登录)
+//提交表单
 const submitForm = async (formEl: FormInstance | undefined, ruleForm: RuleForm) => {
     if (!formEl) return
     await formEl.validate((valid, fields) => {
@@ -187,7 +192,7 @@ const countDown = () => {
 const sendCode = () => {
     request.post('/admin/sendCode' + `/${totalForm.value.email}@qq.com`).then(res => {
         if (res.code == 505) {
-          ElMessage.error(res.msg);
+            ElMessage.error(res.msg);
         } else {
             receiveCode.value = res.data;
             reSendTime.value = 60;
@@ -203,7 +208,7 @@ const submitEmailForm = async (formEl: FormInstance | undefined, emailRuleForm: 
             // 发送请求,后端发送验证码到邮箱
             request.post('/admin/sendCode' + `/${emailRuleForm.email}@qq.com`).then(res => {
                 if (res.code == 505) {
-                  ElMessage.error(res.msg);
+                    ElMessage.error(res.msg);
                 } else {
                     receiveCode.value = res.data;
                     reSendTime.value = 60;
@@ -255,9 +260,12 @@ const submitCodeForm = async (formEl: FormInstance | undefined, codeRuleForm: Co
     await formEl.validate((valid, fields) => {
         if (valid) {
             // 发送请求，注册用户
+            //使用md5对密码进行加密
+            md5.appendStr(totalForm.value.password);
+            totalForm.value.password = md5.end().toString();
             request.post('/admin/sign', totalForm.value).then(res => {
                 if (res.code == 505) {
-                  ElMessage.error(res.msg);
+                    ElMessage.error(res.msg);
                 } else {
                     ElMessage.success('注册成功');
                     window.location.reload();

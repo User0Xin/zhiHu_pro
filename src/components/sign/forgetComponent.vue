@@ -3,10 +3,12 @@ import { ref, reactive, inject } from 'vue';
 import type { ElCarousel, FormInstance, FormRules } from 'element-plus'
 import { useLoginStore } from '@/stores/loginStore';
 import request from '@/utils/request';
-const loginStore = useLoginStore();
-const hidedialogForm = inject('hidedialogForm') as any;
 import { ElMessage } from 'element-plus';
+import { Md5 } from 'ts-md5';
 
+
+// 定义MD5对象
+const md5: any = new Md5()
 
 const totalForm = ref({
     account: '',
@@ -106,11 +108,11 @@ const countDown = () => {
 const sendCode = () => {
     request.post('/admin/checkEmail' + `/${ruleForm.account}/${ruleForm.email}@qq.com`).then(res => {
         if (res.code == 505) {
-          ElMessage.error(res.msg);
+            ElMessage.error(res.msg);
         } else {
             request.post('/admin/sendCode' + `/${ruleForm.email}@qq.com`).then(res => {
                 if (res.code == 505) {
-                  ElMessage.error(res.msg);
+                    ElMessage.error(res.msg);
                 } else {
                     receiveCode.value = res.data;
                     reSendTime.value = 60;
@@ -187,10 +189,12 @@ const submitFormPW = async (formEl: FormInstance | undefined, pwRuleFormRef: pwR
     if (!formEl) return
     await formEl.validate((valid, fields) => {
         if (valid) {
-            totalForm.value.password = pwRuleForm.password;
+            //使用md5对密码进行加密
+            md5.appendStr(pwRuleForm.password);
+            totalForm.value.password = md5.end().toString();
             request.post('/admin/resetPassword' + `/${totalForm.value.account}/${totalForm.value.password}`).then(res => {
                 if (res.code == 505) {
-                  ElMessage.error(res.msg);
+                    ElMessage.error(res.msg);
                 } else {
                     alert('修改成功');
                     window.location.reload();

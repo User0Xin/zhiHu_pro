@@ -89,7 +89,7 @@ const submitForm = async (formEl: FormInstance | undefined, ruleForm: RuleForm) 
     if (!formEl) return
     await formEl.validate((valid, fields) => {
         if (valid) {  // 表单校验通过
-            request.post('/question/addQuestion' + '/1' + '/1' + `/${draftId.value}`, ruleForm).then((res: any) => {
+            request.post('/question/addQuestion' + `/${localStorage.getItem('userId')}` + '/1' + `/${draftId.value}`, ruleForm).then((res: any) => {
                 console.log(res)
                 if (res.code == 200) {
                     ElMessage.success('发布成功')
@@ -107,7 +107,7 @@ const storeAsDedraft = async (formEl: FormInstance | undefined, ruleForm: RuleFo
     if (!formEl) return
     await formEl.validate((valid, fields) => {
         if (valid) {
-            request.post('/question/addQuestion' + '/1' + '/0/-1', ruleForm).then((res: any) => {
+            request.post('/question/addQuestion' + `/${localStorage.getItem('userId')}` + '/0/-1', ruleForm).then((res: any) => {
                 console.log(res)
                 if (res.code == 200) {
                     ElMessage.success('发布成功')
@@ -360,7 +360,7 @@ const handleUploadImg = () => {
                     </div>
                 </template>
                 <el-form-item label="设置标题" prop="title">
-                    <el-input placeholder="请输入标题" v-model="ruleForm.title"></el-input>
+                    <el-input placeholder="请输入标题" v-model="ruleForm.title" maxlength="9" show-word-limit></el-input>
                 </el-form-item>
                 <el-form-item label="添加封面" prop="coverurl">
                     <el-upload class="avatar-uploader" action="http://localhost:8081/question/uploadFile"

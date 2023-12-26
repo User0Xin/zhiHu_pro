@@ -31,7 +31,7 @@ watch(tab, (newValue: string) => {
         // load();
     }
     else if (newValue == '我的收藏') {
-        if (localStorage.getItem('isLogin') == null) {
+        if (localStorage.getItem('userId') == null) {
             //先作是否登录的处理
             pleaseLogin();
             questions.value = [];
@@ -39,7 +39,7 @@ watch(tab, (newValue: string) => {
             return;
         }
         else {
-            method.value = 'listQuestionByUidByPage'
+            method.value = 'listStaredQuestion'
             hasMore.value = true;
             orderBy.value = 'time'
             idOrFlag.value = 1;
@@ -49,7 +49,7 @@ watch(tab, (newValue: string) => {
         }
     }
     else if (newValue == '我的问题') {
-        if (localStorage.getItem('isLogin') == null) {
+        if (localStorage.getItem('userId') == null) {
             //先作是否登录的处理
             pleaseLogin();
             questions.value = [];
@@ -67,7 +67,7 @@ watch(tab, (newValue: string) => {
         }
     }
     else if (newValue == '草稿箱') {
-        if (localStorage.getItem('isLogin') == null) {
+        if (localStorage.getItem('userId') == null) {
             //先作是否登录的处理
             pleaseLogin();
             questions.value = [];
@@ -85,7 +85,7 @@ watch(tab, (newValue: string) => {
         }
     }
     else if (newValue == '我的问题') {
-        if (localStorage.getItem('isLogin') == null) {
+        if (localStorage.getItem('userId') == null) {
             //先作是否登录的处理
             pleaseLogin();
             questions.value = [];
@@ -103,7 +103,7 @@ watch(tab, (newValue: string) => {
         }
     }
     else if (newValue == '草稿箱') {
-        if (localStorage.getItem('isLogin') == null) {
+        if (localStorage.getItem('userId') == null) {
             //先作是否登录的处理
             pleaseLogin();
             questions.value = [];
@@ -230,10 +230,12 @@ const handleCollect = (question: any) => {
                 else question.star--;
                 question.isStared = !question.isStared;
             }
+
+            if (tab.value == '我的收藏' && !question.isStared) {
+                questions.value = questions.value.filter((questionItem: question) => questionItem.id !== question.id);
+            }
         })
-    if (tab.value == '我的收藏' && !question.isStared) {
-        questions.value = questions.value.filter((questionItem: question) => questionItem.id !== question.id);
-    }
+
 }
 
 
@@ -275,12 +277,29 @@ onBeforeUnmount(() => {
 });
 
 const toDetail = (question: question) => {
+
+
     if (tab.value == '草稿箱') toWritePage(question);
     else {
         localStorage.setItem('questionDetail', JSON.stringify(question));
         const lastQuestionTime = localStorage.getItem('lastQuestion');
         const arr = question.time;
         const date = new Date(arr[0], arr[1] - 1, arr[2], arr[3], arr[4], arr[5]);
+        //是否在本地访问过某个作者的判断
+        const key = question.uid + '-lastVisitTime';
+        const lastVisitTime = localStorage.getItem(key);
+        if (lastVisitTime == null) {
+            localStorage.setItem(key, date.toString());//在没访问过该作者文章时，设置本地最近访问时间
+        }
+        else {
+            const lastTime = new Date(lastVisitTime);
+            if (date > lastTime) {
+                localStorage.setItem(key, date.toString());//在当前文章的更新时间晚于上一次访问时间时更新
+            }
+        }
+
+
+
         if (lastQuestionTime == null) {
             localStorage.setItem('lastQuestion', date.toString());
         }

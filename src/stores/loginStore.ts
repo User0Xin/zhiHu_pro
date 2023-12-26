@@ -8,6 +8,8 @@ export const useLoginStore = defineStore('loginStore', () => {
 
     //是否登录
     const isLogin = ref(false);
+    const userName = ref('');
+    const touXiang = ref('');
     //声明操作数据的方法 action  (普通函数)
     const Login = () => {
         localStorage.setItem('isLogin', 'true')
@@ -18,12 +20,24 @@ export const useLoginStore = defineStore('loginStore', () => {
         localStorage.removeItem('isLogin')
         isLogin.value = false
     }
+
+    const setUserName = (name: string) => {
+        userName.value = name
+    }
+
+    const setTouXiang = (url: string) => {
+        touXiang.value = url
+    }
     //声明基于数据派生的计算属性 getters (computed)
 
     return {
         isLogin,
         Login,
-        Logout
+        Logout,
+        userName,
+        touXiang,
+        setUserName,
+        setTouXiang
     }
 
 })

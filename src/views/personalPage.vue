@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import createComponent from '@/components/main_right/parts/createComponent.vue';
 import webInfo from '@/components/main_right/parts/webInfo.vue'
 import type { TabsPaneContext } from 'element-plus'
+import type { UploadProps, UploadUserFile } from 'element-plus'
+import { ElNotification } from 'element-plus'
+import request from '@/utils/request';
+import { useLoginStore } from '@/stores/loginStore';
+const loginStore = useLoginStore();
 // 个人信息
 class Person {
     name: string;
@@ -35,6 +40,11 @@ const getImageUrl = (name: string) => {
 // 个人信息
 const person = ref<Person>(new Person('小猪佩奇', '女', 18, '2003-08-23', '我是小猪佩奇', '程序员', 'touXiang02.png', 100, 200));
 
+onMounted(() => {
+    request.get('/user/getUserInfo' + `/${localStorage.getItem('userId')}`).then(res => {
+        person.value = res.data;
+    })
+})
 
 
 // 点击关注了
@@ -49,7 +59,7 @@ const handleClickFollowed = () => {
 
 // 点击编辑个人资料
 const handleEditPersonalInfo = () => {
-    console.log('编辑个人资料');
+    dialogFormVisible.value = true;
 }
 // 当前选中的tab
 const activeName = ref('个人信息')
@@ -57,6 +67,102 @@ const activeName = ref('个人信息')
 // 点击tab的回调
 const handleClick = (tab: TabsPaneContext, event: Event) => {
     console.log(tab, event);
+
+}
+
+
+const dialogFormVisible = ref(false)
+const formLabelWidth = '100px'
+
+const form = ref({
+    name: '',
+    sex: '',
+    age: 0,
+    birthday: '',
+    description: '',
+    job: ''
+})
+
+const loadInfo = () => {
+    form.value.name = person.value.name;
+    form.value.sex = person.value.sex;
+    form.value.age = person.value.age;
+    form.value.birthday = person.value.birthday;
+    form.value.description = person.value.description;
+    form.value.job = person.value.job;
+}
+
+const handleSubmmit = () => {
+    request.post('/user/updateUserInfo' + `/${localStorage.getItem('userId')}`, form.value).then(res => {
+        if (res.code == 505) {
+            ElNotification({
+                title: '提示',
+                message: res.msg,
+                type: 'warning',
+                offset: 50
+            })
+        } else {
+            // 更新个人信息
+            request.get('/user/getUserInfo' + `/${localStorage.getItem('userId')}`).then(res => {
+                person.value = res.data;
+                //更新localStorage
+                const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null;
+                user.name = person.value.name;
+                localStorage.setItem('user', JSON.stringify(user));
+                // 更新pinia
+                loginStore.setUserName(person.value.name);
+                loginStore.setTouXiang(person.value.touXiang);
+                ElNotification({
+                    title: '提示',
+                    message: '修改成功',
+                    type: 'success',
+                    offset: 50
+                })
+            })
+
+        }
+    })
+    dialogFormVisible.value = false;
+}
+
+
+
+const handleAvatarSuccess: UploadProps['onSuccess'] = (
+    response,
+    uploadFile
+) => {
+    const touXiangForm = ref({
+        touXiang: ''
+    })
+    touXiangForm.value.touXiang = response.data;
+    request.post('/user/updateUserInfo' + `/${localStorage.getItem('userId')}`, touXiangForm.value).then(res => {
+        if (res.code == 505) {
+            ElNotification({
+                title: '提示',
+                message: res.msg,
+                type: 'warning',
+                offset: 50
+            })
+        } else {
+            // 更新个人信息
+            request.get('/user/getUserInfo' + `/${localStorage.getItem('userId')}`).then(res => {
+                person.value = res.data;
+                //更新localStorage
+                const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null;
+                user.touXiang = touXiangForm.value.touXiang;
+                localStorage.setItem('user', JSON.stringify(user));
+                // 更新pinia
+                loginStore.setTouXiang(touXiangForm.value.touXiang);
+                ElNotification({
+                    title: '提示',
+                    message: '修改成功',
+                    type: 'success',
+                    offset: 50
+                })
+            })
+
+        }
+    })
 
 }
 </script>
@@ -68,7 +174,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
             <el-image style=" width: 100%; height: 136px; background-color: #9196a1;" :src="getImageUrl('bgImg.jpg')"
                 fit="cover"></el-image>
             <!-- 头像 -->
-            <el-image class="touXiang" :src="getImageUrl(person.touXiang)" fit="fill" />
+            <el-image class="touXiang" :src="person.touXiang" fit="fill" />
             <!-- IP属地 -->
             <span class="ip-addr">
                 <el-icon>
@@ -89,6 +195,11 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
                     {{ person.description }}
                 </span>
             </div>
+            <el-upload class="avatar-uploader" action="http://localhost:8081/question/uploadFile" :show-file-list="false"
+                :on-success="handleAvatarSuccess">
+                <el-button class="touxiang-button" link>修改头像</el-button>
+            </el-upload>
+
             <el-button class="edit-button" type="default" @click="handleEditPersonalInfo">编辑个人资料</el-button>
         </el-card>
         <div class="bottom-box">
@@ -125,9 +236,6 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 
                             </el-card>
                         </el-tab-pane>
-                        <el-tab-pane label="我的问题" name="我的问题">
-                            我的问题
-                        </el-tab-pane>
                         <el-tab-pane label="我的关注" name="我的关注">
                             我的关注
                         </el-tab-pane>
@@ -155,6 +263,42 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
             </div>
         </div>
     </div>
+
+
+    <el-dialog v-model="dialogFormVisible" title="编辑个人资料" @open="loadInfo" style="width: 650px;padding-right: 50px;"
+        destroy-on-close>
+        <el-form :model="form">
+            <el-form-item label="用户名" :label-width="formLabelWidth">
+                <el-input v-model="form.name" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="性别" :label-width="formLabelWidth">
+                <el-radio-group v-model="form.sex">
+                    <el-radio label="男" />
+                    <el-radio label="女" />
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item label="年龄" :label-width="formLabelWidth">
+                <el-input v-model="form.age" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="生日" :label-width="formLabelWidth">
+                <el-date-picker v-model="form.birthday" type="date" placeholder="Pick a date" style="width: 100%" />
+            </el-form-item>
+            <el-form-item label="工作" :label-width="formLabelWidth">
+                <el-input v-model="form.job" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="个人简介" :label-width="formLabelWidth">
+                <el-input v-model="form.description" autocomplete="off" maxlength="20" show-word-limit />
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleSubmmit">
+                    提交
+                </el-button>
+            </span>
+        </template>
+    </el-dialog>
 </template>
 
 <style scoped>
@@ -224,6 +368,19 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
     width: 118px;
     height: 34px;
 }
+
+.touxiang-button {
+    position: absolute;
+    top: 80%;
+    left: 17%;
+    font-size: 14px;
+    font-weight: 500;
+    color: #155eca;
+    padding: 5px 10px;
+    width: 118px;
+    height: 34px;
+}
+
 
 .edit-button:focus,
 .edit-button:active {
