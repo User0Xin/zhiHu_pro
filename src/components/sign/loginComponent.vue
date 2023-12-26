@@ -6,6 +6,7 @@ import request from '@/utils/request';
 import router from '@/router';
 const loginStore = useLoginStore();
 const hidedialogForm = inject('hidedialogForm') as any;
+import { ElMessage } from 'element-plus';
 
 // 登录表单
 interface RuleForm {
@@ -45,7 +46,7 @@ const submitForm = async (formEl: FormInstance | undefined, ruleForm: RuleForm) 
       // 发送请求，后端返回token，把token放到localstorage中，后面每次请求带上token
       request.post('/admin/login', ruleForm).then(res => {
         if (res.code == 505) {
-          alert(res.msg);
+          ElMessage.error(res.msg);
         } else {
           if (ruleForm.type.includes('记住账号')) {
             const RememberAccount = localStorage.getItem("RememberAccount") ? JSON.parse(localStorage.getItem("RememberAccount") as string) as string[] : null;
