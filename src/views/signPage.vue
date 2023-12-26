@@ -59,7 +59,10 @@ const buttonIndex = ref(1);
 
 <template>
     <div class="signPage">
-        <img alt="LOGO" class="logo" src="https://pic2.zhimg.com/80/v2-f6b1f64a098b891b4ea1e3104b5b71f6_720w.png">
+
+      <div class="logoBar">
+        <img alt="LOGO" class="logo" src="../assets/img/logo.png">
+      </div>
         <el-card class="container">
             <template #header>
                 <div class="card-header">
@@ -89,26 +92,13 @@ const buttonIndex = ref(1);
         </el-card>
         <div class="footer">
             <div>
-                <span>知乎专栏</span><span>圆桌</span><span>发现</span><span>移动应用</span><span>联系我们</span><span>来知乎工作</span><span>注册机构号InvestorRelations</span>
+                <span> © 2023 Baidu</span>
+                <span> 使用百度前必读</span>
+                <span> 意见反馈</span>
+                <span>京ICP证030173号</span>
+                <span>京公网安备11000002000001号</span>
+                <span>京网文[2023]2674-081号</span>
             </div>
-            <div>
-                <span> © 2023 知乎</span>
-                <span>京 ICP 证 110745 号京 ICP 备 13052560 号 -</span>
-                <span>京公网安备 11010802020088 号</span>
-                <span>京网文[2022]2674-081号</span>
-                <span> 出版物经营许可证</span>
-                <span> 药品医疗器械网络信息服务备案（京）网药械信息备字（2022）第00334号</span>
-            </div>
-            <div>广播电视节目制作经营许可证:（京）字第06591号</div>
-            <div>
-                <span>侵权举报</span>
-                <span>网上有害信息举报专区</span>
-                <span>儿童色情信息举报专区</span>
-                <span>互联网算法推荐举报专区</span>
-                <span> 违法和不良信息举报：010-82716601</span>
-                <span>举报邮箱：jubao@zhihu.com</span>
-            </div>
-
         </div>
     </div>
 </template>
@@ -117,7 +107,7 @@ const buttonIndex = ref(1);
 .signPage {
     position: relative;
     /* 设置背景图片 */
-    background-image: url('../assets/img/bgImg02.jpg');
+    background-image: url('../assets/img/bg.png');
     /* 设置背景图片铺满整个元素 */
     background-size: cover;
     /* 设置背景图片居中 */
@@ -128,15 +118,19 @@ const buttonIndex = ref(1);
     height: 100vh;
 
 }
-
+.logoBar{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  bottom: 50%;
+  width: 100%;
+}
 .logo {
     position: absolute;
-
-    top: 10%;
-    left: 46%;
-    height: 81px;
+    top: 12%;
+    height: 94px;
     margin-bottom: 24px;
-    width: 128px;
+    width: 300px;
 }
 
 .container {
@@ -155,10 +149,14 @@ const buttonIndex = ref(1);
 
 .footer {
     position: absolute;
-    left: 8%;
-    bottom: 12%;
+    min-height: 35px;
+    bottom: 9%;
+    width: 100%;
     color: #8590a6;
-    text-align: center;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .footer span {
