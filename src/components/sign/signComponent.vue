@@ -259,7 +259,7 @@ const submitCodeForm = async (formEl: FormInstance | undefined, codeRuleForm: Co
                 if (res.code == 505) {
                   ElMessage.error(res.msg);
                 } else {
-                    alert('注册成功');
+                    ElMessage.success('注册成功');
                     window.location.reload();
                 }
             })
