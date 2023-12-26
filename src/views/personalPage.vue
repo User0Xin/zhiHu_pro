@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import createComponent from '@/components/main_right/parts/createComponent.vue';
 import webInfo from '@/components/main_right/parts/webInfo.vue'
 import type { TabsPaneContext } from 'element-plus'
+import request from '@/utils/request';
 // 个人信息
 class Person {
     name: string;
@@ -35,6 +36,11 @@ const getImageUrl = (name: string) => {
 // 个人信息
 const person = ref<Person>(new Person('小猪佩奇', '女', 18, '2003-08-23', '我是小猪佩奇', '程序员', 'touXiang02.png', 100, 200));
 
+onMounted(() => {
+    request.get('/user/getUserInfo' + `/${localStorage.getItem('userId')}`).then(res => {
+        person.value = res.data;
+    })
+})
 
 
 // 点击关注了
@@ -68,7 +74,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
             <el-image style=" width: 100%; height: 136px; background-color: #9196a1;" :src="getImageUrl('bgImg.jpg')"
                 fit="cover"></el-image>
             <!-- 头像 -->
-            <el-image class="touXiang" :src="getImageUrl(person.touXiang)" fit="fill" />
+            <el-image class="touXiang" :src="person.touXiang" fit="fill" />
             <!-- IP属地 -->
             <span class="ip-addr">
                 <el-icon>
