@@ -119,11 +119,11 @@ const buttonIndex = ref(1);
 
 }
 .logoBar{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  bottom: 50%;
-  width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    bottom: 50%;
+    width: 100%;
 }
 .logo {
     position: absolute;
