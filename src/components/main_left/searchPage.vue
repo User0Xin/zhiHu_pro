@@ -126,8 +126,12 @@ const toDetail = (id: number, authorId: number) => {
   console.log(id)
   router.push('/detailPage/' + authorId + '/' + id)
 }
-const toComment = (id: number, authorId: number) => {
-  router.push({ path: '/detailPage/' + authorId + '/' + id, query: { to: 'comment' } })
+const imgTagRegex = /<img\b[^>]*>/gi;
+const headingRegex = /^#+\s/gm; // 匹配以#开头的行
+// 匹配强调（* 或 _）
+const emphasisRegex = /(?:\*|_)(.*?)(?:\*|_)/g;
+const noMkContent = (content: string) => {
+    return content.replace(imgTagRegex, '[图片]').replace(headingRegex, '').replace(emphasisRegex, '');
 }
 </script>
 
@@ -140,7 +144,7 @@ const toComment = (id: number, authorId: number) => {
         </div>
         <div class="content" @click="toDetail(question.id, question.authorId)">
           <el-text line-clamp="3">
-            {{ question.content }}
+            {{ noMkContent(question.content) }}
           </el-text>
         </div>
       </div>
@@ -165,7 +169,7 @@ const toComment = (id: number, authorId: number) => {
 
 .questionCard {
   /* margin-bottom: 5px; */
-  padding-left: 10px;
+  padding: 10px;
   border-radius: 5px;
   transition: all 0.5s;
   width: 99%;

@@ -21,7 +21,7 @@ onUnmounted(() => {
 
 const handleBeforeUnload = () => {
   // 如果没有设置自动登录，则要清空登录状态
-  if (localStorage.getItem('AutoLogin') == null || localStorage.getItem('AutoLogin') == 'false') {
+  if (localStorage.getItem('AutoLogin') == 'false') {
     loginStore.Logout();
     console.log("退出")
     localStorage.removeItem('user');
