@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue'
 import { ElNotification } from 'element-plus'
 import request from '@/utils/request'
-import { userInfo } from 'os';
 // 总用户数
 const totalUser = ref();
 // 当前页
