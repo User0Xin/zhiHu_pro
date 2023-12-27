@@ -51,12 +51,12 @@ onMounted(() => {
 
 // 点击关注了
 const handleClickFollow = () => {
-    console.log('关注了');
+    activeName.value = '我的关注';
 }
 
 // 点击关注者
 const handleClickFollowed = () => {
-    console.log('关注者');
+    activeName.value = '我的粉丝';
 }
 
 // 点击编辑个人资料
