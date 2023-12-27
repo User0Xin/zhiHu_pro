@@ -98,6 +98,8 @@ const submitForm = async (formEl: FormInstance | undefined, ruleForm: RuleForm) 
           }
           if (ruleForm.type.includes('自动登录')) {
             localStorage.setItem('AutoLogin', 'true');
+          }else{
+            localStorage.setItem('AutoLogin', 'false');
           }
           // 保存token
           localStorage.setItem('user', JSON.stringify(res.data));
