@@ -35,7 +35,7 @@ const ruleForm = reactive<RuleForm>({
 
 const rules = reactive<FormRules<RuleForm>>({
   account: [
-    { required: true, message: '请输入账号', trigger: 'blur' }
+    { required: true, message: '请输入账号', trigger: 'change' }
   ],
   password: [
     {
@@ -137,6 +137,11 @@ const showHistory = () => {
   else
     showBox.value = false;
 }
+const cancelBox = () =>{
+  setTimeout(() => {
+    showBox.value = false;
+  }, 100);
+}
 watch(ruleForm, ()=>{
    if(ruleForm.account.length === 0){
     showBox.value = true;
@@ -144,15 +149,19 @@ watch(ruleForm, ()=>{
     showBox.value = false;
    }
 })
+const setAccount = (item: string) => {
+  ruleForm.account = item;
+  showBox.value = false;
+}
 </script>
 
 <template>
   <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" label-width="80px" class="demo-ruleForm" :size="formSize"
     status-icon style="padding-right: 25px;">
     <el-form-item label="账号" prop="account" class="fa">
-      <el-input v-model="ruleForm.account" type="text" :focus="showHistory" />
+      <el-input v-model="ruleForm.account" type="text" :focus="showHistory" @blur="cancelBox" />
       <div class="historyBox" v-show="showBox">
-        <div v-for="item in RememberAccount" class="item">
+        <div v-for="item in RememberAccount" class="item" @click="setAccount(item)">
           {{ item }}
         </div>
       </div>
@@ -186,11 +195,12 @@ watch(ruleForm, ()=>{
   position: absolute;
   top: 100%;
   z-index: 5;
-  border: 1px solid black;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+  /* border: 1px solid black; */
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 .item:hover{
-  background-color: blue;
+  background-color: rgb(227, 229, 231);
 }
 </style>
