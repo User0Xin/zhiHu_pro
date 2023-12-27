@@ -197,8 +197,8 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (
                     {{ person.description }}
                 </span>
             </div>
-            <el-upload class="avatar-uploader" action="http://localhost:8081/question/uploadFile" :show-file-list="false"
-                :on-success="handleAvatarSuccess">
+            <el-upload class="avatar-uploader" action="http://172.29.19.242:8081/question/uploadFile"
+                :show-file-list="false" :on-success="handleAvatarSuccess">
                 <el-button class="touxiang-button" link>修改头像</el-button>
             </el-upload>
 

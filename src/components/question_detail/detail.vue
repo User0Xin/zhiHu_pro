@@ -414,9 +414,12 @@ onBeforeUnmount(() => {
                                 <div class="item-foot-bar">
                                     <span style="margin-left: 2%; margin-right: 2%;">{{ commentItem.createTime }}</span>
                                     <el-button link @click="handleLikeRootComment(commentItem)">
-                                        <span class="iconfont icon-icon" :class="{ 'already': commentItem.isLiked }"
-                                            style="position: static;"></span>
-                                        <span>{{ commentItem.likeNum }}</span>
+                                        <div style="display: flex;align-items: center;">
+                                            <div class="iconfont icon-icon" :class="{ 'already': commentItem.isLiked }"
+                                                style="position: static;"></div>
+                                            <div style="padding-top: 4px;">{{ commentItem.likeNum }}</div>
+                                        </div>
+
                                     </el-button>
                                     <el-button link @click="handleReplyComment(index, commentItem)">
                                         <span style="margin-right: 1%;">回复</span>
@@ -454,10 +457,12 @@ onBeforeUnmount(() => {
                                                 <span style="margin-left: 2%; margin-right: 2%;">{{ replyItem.createTime
                                                 }}</span>
                                                 <el-button link @click="handleLikeReplyComment(commentItem, replyItem)">
-                                                    <span class="iconfont icon-icon"
-                                                        :class="{ 'already': replyItem.isLiked }"
-                                                        style="position: static;"></span>
-                                                    <span>{{ replyItem.likeNum }}</span>
+                                                    <div style="display: flex;align-items: center;">
+                                                        <div class="iconfont icon-icon"
+                                                            :class="{ 'already': replyItem.isLiked }"
+                                                            style="position: static;"></div>
+                                                        <div style="padding-top: 4px;">{{ replyItem.likeNum }}</div>
+                                                    </div>
                                                 </el-button>
                                                 <el-button link @click="handleReplyComment(index, replyItem)">
                                                     <span style="margin-right: 1%;">回复</span>

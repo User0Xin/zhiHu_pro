@@ -140,7 +140,7 @@ const hasNew = ref((author: author) => {
     const key = uid.value + '-' + author.id + '-lastVisitTime';
     const lastVisitTime = localStorage.getItem(key);//拿到上一次访问这个作者的文章时间
     if (lastVisitTime == null) {//本地无访问该作者的最近时间
-        if (author.updateTime != null){
+        if (author.updateTime != null) {
             allHasNew.value = true;
             return true;//当作者有最近问题发布时间且本地无访问该作者记录
         }
@@ -203,7 +203,7 @@ const toDetail = (question: question) => {
 
 
 //匹配文本中的img标签
-const imgTagRegex = /< img\b[^>]*>/gi;
+const imgTagRegex = /<img\b[^>]*>/gi;
 const headingRegex = /^#+\s/gm; // 匹配以#开头的行
 // 匹配强调（* 或 _）
 const emphasisRegex = /(?:\*|_)(.*?)(?:\*|_)/g;
@@ -475,4 +475,5 @@ const handleLike = (question: any) => {
 
 .number {
     font-size: 20px;
-}</style>
+}
+</style>
