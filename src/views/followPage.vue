@@ -137,7 +137,7 @@ const changeActiveBox = (index: number, authorId: number) => {
 }
 const allHasNew = ref(false);//全部动态是否有更新
 const hasNew = ref((author: author) => {
-    const key = author.id + '-lastVisitTime';
+    const key = uid.value + '-' + author.id + '-lastVisitTime';
     const lastVisitTime = localStorage.getItem(key);//拿到上一次访问这个作者的文章时间
     if (lastVisitTime == null) {//本地无访问该作者的最近时间
         if (author.updateTime != null){
@@ -173,7 +173,7 @@ const hasNew = ref((author: author) => {
 })
 
 const toDetail = (question: question) => {
-    const key = question.author.id + '-lastVisitTime';
+    const key = uid.value + '-' + question.author.id + '-lastVisitTime';
     const lastVisitTime = localStorage.getItem(key);
     const arr = question.time;
 

@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import router from '@/router';
+import { ElNotification } from 'element-plus'
 
+const pleaseLogin = () => {
+    ElNotification({
+        title: '提示',
+        message: '请先登录',
+        type: 'warning',
+        offset: 50
+    })
+}
 // 点击草稿箱的逻辑
 const handleDraft = () => {
     console.log('草稿箱');
@@ -8,11 +17,19 @@ const handleDraft = () => {
 
 // 点击写文章的逻辑
 const handleWriteArticle = () => {
-    router.push('/writeArticlePage');
+    if(localStorage.getItem('userId') == null){
+        pleaseLogin();
+        return;
+    }else
+        router.push('/writeArticlePage');
 }
 //切换动态视图
 const toFollowPage = () => {
-    router.push('/followPage');
+    if(localStorage.getItem('userId') == null){
+        pleaseLogin();
+        return;
+    }else
+        router.push('/followPage');
 }
 
 // 点击发视频的逻辑
@@ -32,7 +49,11 @@ const handleWriteThink = () => {
 
 // 点击开始创作的逻辑
 const handleStartCreate = () => {
-    router.push('/writeArticlePage');
+    if(localStorage.getItem('userId') == null){
+        pleaseLogin();
+        return;
+    }else
+        router.push('/writeArticlePage');
 }
 
 </script>
