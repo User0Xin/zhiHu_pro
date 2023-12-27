@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, inject } from 'vue';
+import { ref, reactive, inject, onMounted, watch } from 'vue';
 import type { FormInstance, FormRules } from 'element-plus'
 import { useLoginStore } from '@/stores/loginStore';
 import request from '@/utils/request';
@@ -9,7 +9,11 @@ const hidedialogForm = inject('hidedialogForm') as any;
 import { ElMessage } from 'element-plus';
 import { Md5 } from 'ts-md5';
 import { ru } from 'element-plus/lib/locale/index.js';
+const RememberAccount = ref<Array<string>>(localStorage.getItem('RememberAccount') ? JSON.parse(localStorage.getItem('RememberAccount')!) : [])
 
+onMounted(()=>{
+  console.log(RememberAccount.value)
+})
 
 // 定义MD5对象
 const md5: any = new Md5()
@@ -98,6 +102,8 @@ const submitForm = async (formEl: FormInstance | undefined, ruleForm: RuleForm) 
           }
           if (ruleForm.type.includes('自动登录')) {
             localStorage.setItem('AutoLogin', 'true');
+          }else{
+            localStorage.setItem('AutoLogin', 'false');
           }
           // 保存token
           localStorage.setItem('user', JSON.stringify(res.data));
@@ -124,16 +130,32 @@ const resetForm = (formEl: FormInstance | undefined) => {
 }
 
 
-
-
-
+const showBox = ref(false)
+const showHistory = () => {
+  if(ruleForm.account.length == 0)
+    showBox.value = true;
+  else
+    showBox.value = false;
+}
+watch(ruleForm, ()=>{
+   if(ruleForm.account.length === 0){
+    showBox.value = true;
+   }else{
+    showBox.value = false;
+   }
+})
 </script>
 
 <template>
   <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" label-width="80px" class="demo-ruleForm" :size="formSize"
     status-icon style="padding-right: 25px;">
-    <el-form-item label="账号" prop="account">
-      <el-input v-model="ruleForm.account" type="text" />
+    <el-form-item label="账号" prop="account" class="fa">
+      <el-input v-model="ruleForm.account" type="text" :focus="showHistory" />
+      <div class="historyBox" v-show="showBox">
+        <div v-for="item in RememberAccount" class="item">
+          {{ item }}
+        </div>
+      </div>
     </el-form-item>
     <el-form-item label="密码" prop="password">
       <el-input v-model="ruleForm.password" type="password" show-password />
@@ -155,4 +177,20 @@ const resetForm = (formEl: FormInstance | undefined) => {
 
 <style scoped>
 /* 主体 */
+.fa{
+  position: relative;
+}
+.historyBox{
+  width: 100%;
+  background-color: rgba(255,255,255, 1);
+  position: absolute;
+  top: 100%;
+  z-index: 5;
+  border: 1px solid black;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+.item:hover{
+  background-color: blue;
+}
 </style>

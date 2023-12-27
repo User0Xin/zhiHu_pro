@@ -3,7 +3,7 @@ import { h, provide, ref, computed } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
 import questionList from '@/components/main_left/questionList.vue'
 import request from '@/utils/request';
-
+const userId = localStorage.getItem('userId') ? localStorage.getItem('userId') : 0;
 // 问题列表的数量
 const count = ref(15);
 // 是否还有更多
@@ -40,7 +40,7 @@ const hasNew = ref(false);
 
 
 setInterval(() => {
-    const last = localStorage.getItem('lastQuestion')
+    const last = localStorage.getItem(userId + '-lastQuestion')
     request.get('/question/lastQuestion').then((res: any) => {
         if (last == null) {
             if (res == null) {

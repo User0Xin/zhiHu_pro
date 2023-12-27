@@ -268,6 +268,9 @@ onMounted(() => {
     //     console.log(err);
     // })
     // load();
+    setTimeout(() => {
+        if(questions.value.length == 0) load();
+    }, 1000);
 });
 // 组件卸载时取消观察
 onBeforeUnmount(() => {
@@ -282,11 +285,11 @@ const toDetail = (question: question) => {
     if (tab.value == '草稿箱') toWritePage(question);
     else {
         localStorage.setItem('questionDetail', JSON.stringify(question));
-        const lastQuestionTime = localStorage.getItem('lastQuestion');
+        const lastQuestionTime = localStorage.getItem(userId + '-lastQuestion');
         const arr = question.time;
         const date = new Date(arr[0], arr[1] - 1, arr[2], arr[3], arr[4], arr[5]);
         //是否在本地访问过某个作者的判断
-        const key = question.uid + '-lastVisitTime';
+        const key = userId + '-' + question.uid + '-lastVisitTime';
         const lastVisitTime = localStorage.getItem(key);
         if (lastVisitTime == null) {
             localStorage.setItem(key, date.toString());//在没访问过该作者文章时，设置本地最近访问时间
@@ -301,12 +304,12 @@ const toDetail = (question: question) => {
 
 
         if (lastQuestionTime == null) {
-            localStorage.setItem('lastQuestion', date.toString());
+            localStorage.setItem(userId + '-lastQuestion', date.toString());
         }
         else {
             const lastTime = new Date(lastQuestionTime);
             if (date > lastTime) {
-                localStorage.setItem('lastQuestion', date.toString());
+                localStorage.setItem(userId + '-lastQuestion', date.toString());
             }
         }
         router.push('/detailPage/' + question.uid + '/' + question.id)
@@ -351,7 +354,7 @@ const replaceQuestion = (newQuestion: question) => {
 //         return questions.value.filter((question) => question.id != topQuestion.value.id);
 // });
 const filteredQuestions = computed(() => {
-    if (!iftop.value) return questions.value;
+    if (!iftop.value || tab.value == '我的收藏') return questions.value;
     else
         return questions.value.filter(question =>
             !topQuestion.value.some((top: question) => top.id === question.id)
