@@ -7,6 +7,8 @@ import type { UploadProps, UploadUserFile } from 'element-plus'
 import { ElNotification } from 'element-plus'
 import request from '@/utils/request';
 import { useLoginStore } from '@/stores/loginStore';
+import followUserListComponent from '@/components/personal/followUserListComponent.vue';
+import fansListComponent from '@/components/personal/fansListComponent.vue'
 const loginStore = useLoginStore();
 // 个人信息
 class Person {
@@ -237,7 +239,10 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (
                             </el-card>
                         </el-tab-pane>
                         <el-tab-pane label="我的关注" name="我的关注">
-                            我的关注
+                            <followUserListComponent></followUserListComponent>
+                        </el-tab-pane>
+                        <el-tab-pane label="我的粉丝" name="我的粉丝">
+                            <fansListComponent></fansListComponent>
                         </el-tab-pane>
                     </el-tabs>
                 </el-card>
