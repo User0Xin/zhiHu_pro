@@ -211,10 +211,11 @@ const submitEmailForm = async (formEl: FormInstance | undefined, emailRuleForm: 
                     ElMessage.error(res.msg);
                 } else {
                     receiveCode.value = res.data;
-                    reSendTime.value = 60;
-                    countDown();
+
                 }
             })
+            reSendTime.value = 60;
+            countDown();
             totalForm.value.userName = emailRuleForm.userName;
             totalForm.value.email = emailRuleForm.email + '@qq.com';
             carouselHeight.value = '180px';
