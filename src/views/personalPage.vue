@@ -34,6 +34,10 @@ class Person {
     }
 }
 
+const changeFollowNum = (num: number) => {
+    person.value.followNum += num;
+}
+
 // 获取图片的url
 const getImageUrl = (name: string) => {
     return new URL(`../assets/img/${name}`, import.meta.url).href;
@@ -197,8 +201,8 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (
                     {{ person.description }}
                 </span>
             </div>
-            <el-upload class="avatar-uploader" action="http://172.29.19.242:8081/question/uploadFile"
-                :show-file-list="false" :on-success="handleAvatarSuccess">
+            <el-upload class="avatar-uploader" action="http://localhost:8081/question/uploadFile" :show-file-list="false"
+                :on-success="handleAvatarSuccess">
                 <el-button class="touxiang-button" link>修改头像</el-button>
             </el-upload>
 
@@ -239,7 +243,7 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (
                             </el-card>
                         </el-tab-pane>
                         <el-tab-pane label="我的关注" name="我的关注">
-                            <followUserListComponent></followUserListComponent>
+                            <followUserListComponent @changeFollowNum="changeFollowNum"></followUserListComponent>
                         </el-tab-pane>
                         <el-tab-pane label="我的粉丝" name="我的粉丝">
                             <fansListComponent></fansListComponent>

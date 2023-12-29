@@ -278,7 +278,10 @@ const handleLike = (question: any) => {
                                 {{ question.author.name }}
                             </div>
                             <div style="font-size: small; color: darkgray;">
-                                {{ question.time.join('-') }}
+                                <!-- {{ question.time.join('-') }} -->
+                                {{
+                                    `${question.time[0]}-${question.time[1]}-${question.time[2]}
+                                                                ${question.time[3]}:${question.time[4]}:${question.time[5]}` }}
                             </div>
                         </div>
                     </div>

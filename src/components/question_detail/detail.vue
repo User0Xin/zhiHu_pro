@@ -53,6 +53,12 @@ const setLocalStorage = () => {
 const followTheAuthor = () => {
     console.log('关注作者');
     request.post(`/user/followUser/${localStorage.getItem('userId')}/${currentUid}/${info.value.isFollowed ? -1 : 1}`)
+    if (!info.value.isFollowed) {
+        info.value.followedNum++;
+    }
+    else {
+        info.value.followedNum--;
+    }
     info.value.isFollowed = !info.value.isFollowed;
     setLocalStorage();
 }
@@ -325,9 +331,13 @@ const handleLikeReplyComment = (commentItem: commentItem, replyItem: commentItem
 }
 
 // 判断是否是自己的问题
-const isMyQuestion = () => {
-    return localStorage.getItem('userId') == questionDetail.value.userId;
-}
+const isMyQuestion = ref(false);
+
+onMounted(() => {
+    if (questionDetail.value.uid == localStorage.getItem('userId')) {
+        isMyQuestion.value = true;
+    }
+})
 
 //加载更多
 const hasMore = ref(true);

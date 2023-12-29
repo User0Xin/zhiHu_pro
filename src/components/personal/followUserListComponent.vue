@@ -35,12 +35,16 @@ const handleFollowUser = (id: number) => {
                 type: 'success',
                 offset: 50
             })
+            emit('changeFollowNum', -1);
             request.get('/user/getFollowedUidList' + `/${localStorage.getItem('userId')}`).then(res => {
                 followUserList.value = res.data;
             })
         }
     })
 }
+
+const emit = defineEmits(['changeFollowNum']);
+
 
 onMounted(() => {
     request.get('/user/getFollowedUidList' + `/${localStorage.getItem('userId')}`).then(res => {

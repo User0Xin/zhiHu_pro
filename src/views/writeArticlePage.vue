@@ -374,7 +374,7 @@ const toolbars = {
                 </ul>
 
                 <el-upload v-model:file-list="imgfileList" class="upload-demo"
-                    action="http://172.29.19.242:8081/question/uploadContentImg" multiple :on-preview="handlePreview"
+                    action="http://localhost:8081/question/uploadContentImg" multiple :on-preview="handlePreview"
                     :on-remove="handleRemove" :before-remove="beforeRemove" :on-success="handleImgSuccess"
                     :show-file-list="false">
                     <el-button type="primary">上传图片</el-button>
@@ -397,7 +397,7 @@ const toolbars = {
                     <el-input placeholder="请输入标题" v-model="ruleForm.title" maxlength="9" show-word-limit></el-input>
                 </el-form-item>
                 <el-form-item label="添加封面" prop="coverurl">
-                    <el-upload class="avatar-uploader" action="http://172.29.19.242:8081/question/uploadFile"
+                    <el-upload class="avatar-uploader" action="http://localhost:8081/question/uploadFile"
                         :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar" />
                         <el-icon v-else class="avatar-uploader-icon">
@@ -407,7 +407,7 @@ const toolbars = {
                 </el-form-item>
                 <el-form-item label="添加视频" prop="videourl" style="position: relative;">
                     <el-upload v-model:file-list="fileList" class="upload-demo"
-                        action="http://172.29.19.242:8081/question/uploadFile" multiple :on-preview="handlePreview"
+                        action="http://localhost:8081/question/uploadFile" multiple :on-preview="handlePreview"
                         :on-remove="handleRemove" :before-remove="beforeRemove" :limit="1" :on-exceed="handleExceed"
                         :on-progress="handleProgress" :on-success="handleVideoSuccess" :before-upload="beforeUpload">
                         <el-button type="default">点击上传视频</el-button>
