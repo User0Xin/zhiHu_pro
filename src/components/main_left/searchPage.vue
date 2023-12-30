@@ -3,7 +3,7 @@ import questionList from './questionList.vue';
 import { onMounted, ref, watch, computed } from 'vue'
 import { useQuestionStore } from '@/stores/questionStore';
 import router from '@/router';
-import reques from '@/utils/request';
+import request from '@/utils/request';
 const questionStore = useQuestionStore()
 const loadText = ref('加载更多')
 const hasMore = ref(true)
@@ -12,12 +12,12 @@ const uid = localStorage.getItem('userId')
 
 class question {
   id: number;
-  authorId: number;
+  uid: number;
   title: string;
   content: string;
-  constructor(id: number, authorId: number, title: string, content: string) {
+  constructor(id: number, uid: number, title: string, content: string) {
     this.id = id;
-    this.authorId = authorId;
+    this.uid = uid;
     this.title = title;
     this.content = content;
   }
@@ -122,9 +122,17 @@ class question {
 // ]);
 const questions = computed(() => questionStore.questions as any[]);
 
+const getQuestionById = (qid: number, uid: number) => {
+  request.get('/question/getQuestionByQid/' + qid + '/' + uid).then(res => {
+    localStorage.setItem('questionDetail', JSON.stringify(res.data))
+    router.push('/detailPage/' + uid + '/' + qid)
+  })
+}
+
 const toDetail = (id: number, authorId: number) => {
-  console.log(id)
-  router.push('/detailPage/' + authorId + '/' + id)
+  // console.log(id)
+  // router.push('/detailPage/' + authorId + '/' + id)
+  getQuestionById(id, authorId)
 }
 const imgTagRegex = /<img\b[^>]*>/gi;
 const headingRegex = /^#+\s/gm; // 匹配以#开头的行
@@ -139,10 +147,10 @@ const noMkContent = (content: string) => {
   <div class="contain">
     <div class="body">
       <div v-for="question in questions" :key="question.id" class="questionCard">
-        <div class="title" link @click="toDetail(question.id, question.authorId)">
+        <div class="title" link @click="toDetail(question.id, question.uid)">
           <h2>{{ question.title }}</h2>
         </div>
-        <div class="content" @click="toDetail(question.id, question.authorId)">
+        <div class="content" @click="toDetail(question.id, question.uid)">
           <el-text line-clamp="3">
             {{ noMkContent(question.content) }}
           </el-text>

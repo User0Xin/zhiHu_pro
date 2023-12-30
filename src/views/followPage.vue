@@ -203,7 +203,7 @@ const toDetail = (question: question) => {
 
 
 //匹配文本中的img标签
-const imgTagRegex = /< img\b[^>]*>/gi;
+const imgTagRegex = /<img\b[^>]*>/gi;
 const headingRegex = /^#+\s/gm; // 匹配以#开头的行
 // 匹配强调（* 或 _）
 const emphasisRegex = /(?:\*|_)(.*?)(?:\*|_)/g;
@@ -278,7 +278,8 @@ const handleLike = (question: any) => {
                                 {{ question.author.name }}
                             </div>
                             <div style="font-size: small; color: darkgray;">
-                                {{ question.time.join('-') }}
+                                <!-- {{ question.time.join('-') }} -->
+                                {{ `${question.time[0]}-${question.time[1]}-${question.time[2]} ${question.time[3]}:${question.time[4]}:${question.time[5]}` }}
                             </div>
                         </div>
                     </div>
