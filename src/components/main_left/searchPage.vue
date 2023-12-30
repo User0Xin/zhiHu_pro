@@ -122,6 +122,10 @@ class question {
 // ]);
 const questions = computed(() => questionStore.questions as any[]);
 
+// const toDetail = (id: number, authorId: number) => {
+//   console.log(id)
+//   router.push('/detailPage/' + authorId + '/' + id)
+// }
 const getQuestionById = (qid: number, uid: number) => {
   request.get('/question/getQuestionByQid/' + qid + '/' + uid).then(res => {
     localStorage.setItem('questionDetail', JSON.stringify(res.data))
@@ -139,7 +143,7 @@ const headingRegex = /^#+\s/gm; // 匹配以#开头的行
 // 匹配强调（* 或 _）
 const emphasisRegex = /(?:\*|_)(.*?)(?:\*|_)/g;
 const noMkContent = (content: string) => {
-    return content.replace(imgTagRegex, '[图片]').replace(headingRegex, '').replace(emphasisRegex, '');
+  return content.replace(imgTagRegex, '[图片]').replace(headingRegex, '').replace(emphasisRegex, '');
 }
 </script>
 

@@ -34,6 +34,10 @@ class Person {
     }
 }
 
+const changeFollowNum = (num: number) => {
+    person.value.followNum += num;
+}
+
 // 获取图片的url
 const getImageUrl = (name: string) => {
     return new URL(`../assets/img/${name}`, import.meta.url).href;
@@ -51,12 +55,12 @@ onMounted(() => {
 
 // 点击关注了
 const handleClickFollow = () => {
-    console.log('关注了');
+    activeName.value = '我的关注';
 }
 
 // 点击关注者
 const handleClickFollowed = () => {
-    console.log('关注者');
+    activeName.value = '我的粉丝';
 }
 
 // 点击编辑个人资料
@@ -239,7 +243,7 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (
                             </el-card>
                         </el-tab-pane>
                         <el-tab-pane label="我的关注" name="我的关注">
-                            <followUserListComponent></followUserListComponent>
+                            <followUserListComponent @changeFollowNum="changeFollowNum"></followUserListComponent>
                         </el-tab-pane>
                         <el-tab-pane label="我的粉丝" name="我的粉丝">
                             <fansListComponent></fansListComponent>

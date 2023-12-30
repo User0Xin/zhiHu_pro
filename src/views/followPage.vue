@@ -140,7 +140,7 @@ const hasNew = ref((author: author) => {
     const key = uid.value + '-' + author.id + '-lastVisitTime';
     const lastVisitTime = localStorage.getItem(key);//拿到上一次访问这个作者的文章时间
     if (lastVisitTime == null) {//本地无访问该作者的最近时间
-        if (author.updateTime != null){
+        if (author.updateTime != null) {
             allHasNew.value = true;
             return true;//当作者有最近问题发布时间且本地无访问该作者记录
         }
@@ -279,7 +279,9 @@ const handleLike = (question: any) => {
                             </div>
                             <div style="font-size: small; color: darkgray;">
                                 <!-- {{ question.time.join('-') }} -->
-                                {{ `${question.time[0]}-${question.time[1]}-${question.time[2]} ${question.time[3]}:${question.time[4]}:${question.time[5]}` }}
+                                {{
+                                    `${question.time[0]}-${question.time[1]}-${question.time[2]}
+                                                                ${question.time[3]}:${question.time[4]}:${question.time[5]}` }}
                             </div>
                         </div>
                     </div>
@@ -476,4 +478,5 @@ const handleLike = (question: any) => {
 
 .number {
     font-size: 20px;
-}</style>
+}
+</style>
